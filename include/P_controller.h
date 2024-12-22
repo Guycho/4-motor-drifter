@@ -1,24 +1,36 @@
-#ifndef P_CONTROLLER_H
-#define P_CONTROLLER_H
+#ifndef PID_CONTROLLER_H
+#define PID_CONTROLLER_H
 
 #include <Arduino.h>
+#include <Chrono.h>
+
 #include "utils.h"
 
-struct PControllerConfig {
+struct PIDControllerConfig {
     float Kp;
+    float Ki;
+    float Kd;
     float max_output;
-    };
-
-class PController {
-public:
- PController();
- ~PController();
- void init(const PControllerConfig& config);
- float calculateOutput(float error);
-
-private:
-    float m_kp;
-    float m_max_output;
+    float max_integral;  // Added for anti-windup
+    float dt_seconds;
 };
 
-#endif // P_CONTROLLER_H
+class PIDController {
+   public:
+    PIDController();
+    ~PIDController();
+    void init(const PIDControllerConfig& config);
+    float calculateOutput(float error);
+
+   private:
+    Chrono m_dt_timer;
+    float m_kp;
+    float m_ki;
+    float m_kd;
+    float m_max_output;
+    float m_max_integral;  // Added for anti-windup
+    float m_integral;
+    float m_previous_error;
+};
+
+#endif  // PID_CONTROLLER_H

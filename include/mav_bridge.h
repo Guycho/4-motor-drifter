@@ -35,6 +35,12 @@ struct MavMsg {
     float params[7] = {0, 0, 0, 0, 0, 0, 0};
 
 };
+
+struct MotorSpeed {
+    uint8_t motor_pin;
+    uint8_t motor_value;
+};
+
 class MavBridge {
    public:
     MavBridge();
@@ -42,6 +48,7 @@ class MavBridge {
 
     void init(const MavBridgeConfig &mav__msg);
     void run();
+    void set_motor_speed(MotorSpeed motor_speed);
     InertialData get_inertial_data();
 
    private:

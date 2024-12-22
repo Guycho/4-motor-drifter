@@ -3,16 +3,14 @@
 
 #include <Arduino.h>
 
-enum Positions { FR = 0, RR = 1, RL = 2, FL = 3 };
+enum WheelPositions { FR = 0, RR = 1, RL = 2, FL = 3 };
+enum SteeringPositions { R = 0, L = 1 };
 
 namespace Config {
-const float width = 0.5;
-const float length = 0.5;
-const float right_angle = 90;
+const float steering_multiplier = 1.2;
 const uint8_t num_wheels = 4;
-const uint8_t num_steering = 4;
-const uint8_t num_coilover = 4;
-namespace Esc {
+const uint8_t num_steering = 2;
+namespace Motor {
 namespace Wheel {
 extern const uint8_t pin[];
 extern const uint16_t min_pulse[];
@@ -23,17 +21,7 @@ extern const uint8_t pin[];
 extern const uint16_t min_pulse[];
 extern const uint16_t max_pulse[];
 }  // namespace Steering
-namespace Coilover {
-extern const uint8_t pin[];
-extern const uint16_t min_pulse[];
-extern const uint16_t max_pulse[];
-}  // namespace Coilover
-}  // namespace Esc
-namespace Encoder {
-extern const uint8_t pin[];
-extern const bool reverse[];
-extern const float offset[];
-}  // namespace Encoder
+}  // namespace Motor
 namespace Controller {
 extern const float Kp[];
 extern const float max_output[];
@@ -55,16 +43,5 @@ extern const uint8_t throttle_channel;
 extern const uint8_t message_rate;
 extern const uint32_t is_alive_timeout;
 }  // namespace MavlinkBridge
-namespace PS4Controller {
-extern const char *mac;
-extern const float dead_band;
-}  // namespace PS4Controller
-namespace Coilover {
-extern const bool reverse[];
-namespace Controller {
-extern const float Kp[];
-extern const float max_output[];
-}  // namespace Controller
-}  // namespace Coilover
 }  // namespace Config
 #endif  // CONFIG_H

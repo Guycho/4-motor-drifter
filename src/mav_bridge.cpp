@@ -51,6 +51,16 @@ void MavBridge::run() {
     }
 }
 
+void MavBridge::set_motor_speed(MotorSpeed motor_speed) {
+    MavMsg m_mav_msg;
+    m_mav_msg.system_id = m_system_id;
+    m_mav_msg.component_id = m_component_id;
+    m_mav_msg.msg_id = MAV_CMD_DO_SET_SERVO;
+    m_mav_msg.params[0] = motor_speed.motor_pin;
+    m_mav_msg.params[1] = motor_speed.motor_value;
+    send_mavlink_message(m_mav_msg);
+}
+
 void MavBridge::set_messages_rates() {
     set_message_rate(MAVLINK_MSG_ID_SCALED_IMU, m_message_rate);
     set_message_rate(MAVLINK_MSG_ID_HEARTBEAT, m_message_rate);
