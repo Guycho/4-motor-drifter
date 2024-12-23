@@ -38,7 +38,7 @@ struct MavMsg {
 
 struct MotorSpeed {
     uint8_t motor_pin;
-    uint8_t motor_value;
+    uint16_t motor_value;
 };
 
 class MavBridge {

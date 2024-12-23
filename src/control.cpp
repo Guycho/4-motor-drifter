@@ -44,4 +44,11 @@ void Control::run() {
     }
     m_steering_mixer.run(steering_mixer_data);
     m_wheels_mixer.run(wheels_mixer_data);
+    m_print_data.throttle = m_throttle;
+    m_print_data.steering = m_steering;
+    m_print_data.arm_enabled = m_arm_enabled;
+    m_print_data.wheels_mixer_data = wheels_mixer_data;
+    m_print_data.steering_mixer_data = steering_mixer_data;
 }
+
+ControlPrintData Control::get_print_data() { return m_print_data; }

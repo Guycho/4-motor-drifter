@@ -15,6 +15,14 @@ struct ControlConfig {
     WheelsMixer *wheels_mixer;
 };
 
+struct ControlPrintData {
+    float throttle;
+    float steering;
+    bool arm_enabled;
+    WheelsMixerData wheels_mixer_data;
+    SteeringMixerData steering_mixer_data;
+};
+
 class Control {
    public:
     // Constructor
@@ -25,6 +33,7 @@ class Control {
 
     void init(const ControlConfig &config);
     void run();
+    ControlPrintData get_print_data();
 
    private:
     Chrono m_hb_timer;
@@ -32,6 +41,7 @@ class Control {
     MavBridge m_mav_bridge;
     SteeringMixer m_steering_mixer;
     WheelsMixer m_wheels_mixer;
+    ControlPrintData m_print_data;
 
     InertialData m_inertial_data;
 
