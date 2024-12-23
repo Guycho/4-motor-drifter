@@ -23,3 +23,5 @@ void WheelsMixer::run(WheelsMixerData &wheels_mixer_data) {
         m_mav_bridge.set_motor_speed(motor_speed);
     }
 }
+
+uint8_t WheelsMixer::get_num_of_drive_modes() { return NUM_DRIVE_MODES; }

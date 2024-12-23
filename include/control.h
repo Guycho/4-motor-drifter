@@ -21,6 +21,7 @@ struct ControlPrintData {
     bool arm_enabled;
     WheelsMixerData wheels_mixer_data;
     SteeringMixerData steering_mixer_data;
+    InertialData inertial_data;
 };
 
 class Control {
@@ -42,8 +43,13 @@ class Control {
     SteeringMixer m_steering_mixer;
     WheelsMixer m_wheels_mixer;
     ControlPrintData m_print_data;
-
     InertialData m_inertial_data;
+
+    uint8_t NUM_STEERING_MODES;
+    uint8_t NUM_DRIVE_MODES;
+
+    uint8_t m_steering_mode;
+    uint8_t m_drive_mode;
 
     bool m_arm_enabled = false;
     float m_throttle = 0;

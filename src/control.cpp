@@ -11,6 +11,8 @@ void Control::init(const ControlConfig &config) {
     m_arm_enabled = false;
     m_throttle = 0;
     m_steering = 0;
+    NUM_STEERING_MODES = m_steering_mixer.get_num_of_steering_modes();
+    NUM_DRIVE_MODES = m_wheels_mixer.get_num_of_drive_modes();
 }
 
 void Control::run() {
@@ -20,6 +22,9 @@ void Control::run() {
     if (input_data.new_data) {
         if (input_data.arm_toggle) {
             m_arm_enabled = !m_arm_enabled;
+        }
+        if (input_data.steering_mode_toggle) {
+            m_steering_mode = (m_steering_mode + 1) % NUM_STEERING_MODES;
         }
         m_steering = input_data.steering;
         m_throttle = input_data.throttle;
@@ -49,6 +54,7 @@ void Control::run() {
     m_print_data.arm_enabled = m_arm_enabled;
     m_print_data.wheels_mixer_data = wheels_mixer_data;
     m_print_data.steering_mixer_data = steering_mixer_data;
+    m_print_data.inertial_data = m_inertial_data;
 }
 
 ControlPrintData Control::get_print_data() { return m_print_data; }

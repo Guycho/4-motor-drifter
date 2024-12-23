@@ -25,10 +25,10 @@ extern const bool use_filters = true;
 }  // namespace PIDController
 namespace MavlinkBridge {
 HardwareSerial *serial = &Serial2;
-const uint32_t baudrate = 500000;
+const uint32_t baudrate = 2000000;
 const uint8_t system_id = 1;
 const uint8_t component_id = 0;
-const uint8_t message_rate = 250;
+const uint16_t message_rate = 500;
 const uint32_t is_alive_timeout = 1000;
 }  // namespace MavlinkBridge
 namespace PS4Controller {

@@ -10,6 +10,8 @@ float calc_steering(int8_t lx);
 float m_throttle;
 float m_steering;
 bool m_arm_toggle;
+bool m_steering_mode_toggle;
+bool m_drive_mode_toggle;
 bool m_new_data;
 
 uint8_t m_dead_band;
@@ -54,6 +56,12 @@ void controller_do() {
     if (crd) {
         m_arm_toggle = true;
     }
+    if (sqd) {
+        m_steering_mode_toggle = true;
+    }
+    if (cid) {
+        m_drive_mode_toggle = true;
+    }
 
     m_throttle = calc_throttle(l2, r2);
     m_steering = calc_steering(lx);
@@ -66,10 +74,14 @@ InputControllerData get_input_data(){
     data.throttle = m_throttle;
     data.steering = m_steering;
     data.arm_toggle = m_arm_toggle;
+    data.steering_mode_toggle = m_steering_mode_toggle;
+    data.drive_mode_toggle = m_drive_mode_toggle;
     data.new_data = m_new_data;
     m_throttle = 0;
     m_steering = 0;
     m_arm_toggle = false;
+    m_steering_mode_toggle = false;
+    m_drive_mode_toggle = false;
     m_new_data = false;
     return data;
 }

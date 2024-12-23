@@ -13,6 +13,8 @@ struct InputControllerData {
     float throttle;
     float steering;
     bool arm_toggle;
+    bool steering_mode_toggle;
+    bool drive_mode_toggle;
     bool new_data;
 };
 struct InputControllerConfig {

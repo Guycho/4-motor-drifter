@@ -60,23 +60,6 @@ void setup() {
 void loop() {
     control.run();
     if (print_timer.hasPassed(500, true)) {
-        ControlPrintData print_data = control.get_print_data();
-        Serial.print("Throttle: ");
-        Serial.print(print_data.throttle);
-        Serial.print(" Steering: ");
-        Serial.print(print_data.steering);
-        Serial.print(" Arm enabled: ");
-        Serial.print(print_data.arm_enabled);
-        Serial.print(" Wheels: ");
-        for (int i = 0; i < Config::num_wheels; i++) {
-            Serial.print(print_data.wheels_mixer_data.motor_speed[i]);
-            Serial.print(" ");
-        }
-        Serial.print(" Steering: ");
-        for (int i = 0; i < Config::num_steering; i++) {
-            Serial.print(print_data.steering_mixer_data.motor_speed[i]);
-            Serial.print(" ");
-        }
         Serial.println();
     }
 }

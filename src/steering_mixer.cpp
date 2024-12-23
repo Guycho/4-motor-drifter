@@ -23,3 +23,5 @@ void SteeringMixer::run(SteeringMixerData &Steering_mixer_data) {
         m_mav_bridge.set_motor_speed(motor_speed);
     }
 }
+
+uint8_t SteeringMixer::get_num_of_steering_modes() { return NUM_STEERING_MODES; }
