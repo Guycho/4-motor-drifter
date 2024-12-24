@@ -3,6 +3,7 @@
 #include "config.h"
 #include "control.h"
 #include "input.h"
+#include "PID.h"
 #include "mav_bridge.h"
 #include "wheels_mixer.h"
 #include "steering_mixer.h"
@@ -12,6 +13,7 @@ Chrono print_timer;
 MavBridge mav_bridge;
 SteeringMixer steering_mixer;
 WheelsMixer wheels_mixer;
+PID pid;
 Control control;
 
 void setup() {
@@ -49,6 +51,17 @@ void setup() {
         wheels_config.max_pulse[i] = Config::Motor::Wheel::max_pulse[i];
     }
     wheels_mixer.init(wheels_config);
+
+    PIDConfig pid_config;
+    pid_config.kp = Config::PIDController::kp;
+    pid_config.ki = Config::PIDController::ki;
+    pid_config.kd = Config::PIDController::kd;
+    pid_config.max_output = Config::PIDController::max_output;
+    pid_config.integral_percentage = Config::PIDController::integral_percentage;
+    pid_config.low_pass_alpha = Config::PIDController::low_pass_alpha;
+    pid_config.high_Pass_alpha = Config::PIDController::high_Pass_alpha;
+    pid_config.use_filters = Config::PIDController::use_filters;
+    pid.init(pid_config);
 
     ControlConfig control_config;
     control_config.mav_bridge = &mav_bridge;

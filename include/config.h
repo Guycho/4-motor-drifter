@@ -11,6 +11,9 @@ const uint8_t num_wheels = 4;
 const uint8_t num_steering = 2;
 const float min_percentage = -100.0;
 const float max_percentage = 100.0;
+const float max_omega = 360; // deg/s
+const float steering_r_l_ratio = 0.1;
+const float cs_ratio = 0.7;
 namespace Motor {
 namespace Wheel {
 extern const uint8_t pin[];
@@ -33,6 +36,10 @@ extern const float low_pass_alpha;
 extern const float high_Pass_alpha;
 extern const bool use_filters;
 }  // namespace PIDController
+namespace PController {
+extern const float kp;
+extern const float max_output;
+}  // namespace PController
 namespace MavlinkBridge {
 extern HardwareSerial *serial;
 extern const uint32_t baudrate;

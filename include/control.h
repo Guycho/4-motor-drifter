@@ -5,14 +5,16 @@
 #include "config.h"
 #include "input.h"
 #include "mav_bridge.h"
-#include "wheels_mixer.h"
 #include "steering_mixer.h"
 #include "utils.h"
+#include "PID.h"
+#include "wheels_mixer.h"
 
 struct ControlConfig {
     MavBridge *mav_bridge;
     SteeringMixer *steering_mixer;
     WheelsMixer *wheels_mixer;
+    PID *pid;
 };
 
 struct ControlPrintData {
@@ -42,6 +44,7 @@ class Control {
     MavBridge m_mav_bridge;
     SteeringMixer m_steering_mixer;
     WheelsMixer m_wheels_mixer;
+    PID m_pid;
     ControlPrintData m_print_data;
     InertialData m_inertial_data;
 

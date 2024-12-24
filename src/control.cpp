@@ -25,6 +25,7 @@ void Control::run() {
         }
         if (input_data.steering_mode_toggle) {
             m_steering_mode = (m_steering_mode + 1) % NUM_STEERING_MODES;
+            m_pid.reset_pid();
         }
         if (input_data.drive_mode_toggle) {
             m_drive_mode = (m_drive_mode + 1) % NUM_DRIVE_MODES;
@@ -36,12 +37,49 @@ void Control::run() {
     SteeringMixerData steering_mixer_data;
     WheelsMixerData wheels_mixer_data;
     if (m_arm_enabled) {
-        steering_mixer_data.motor_speed[R] = m_steering;
-        steering_mixer_data.motor_speed[L] = m_steering;
-        wheels_mixer_data.motor_speed[FR] = m_throttle;
-        wheels_mixer_data.motor_speed[RR] = m_throttle;
-        wheels_mixer_data.motor_speed[RL] = m_throttle;
-        wheels_mixer_data.motor_speed[FL] = m_throttle;
+        switch (m_steering_mode) {
+            case NORMAL:
+                steering_mixer_data.motor_speed[R] = m_steering + Config::steering_r_l_ratio * m_steering;
+                steering_mixer_data.motor_speed[L] = m_steering;
+                break;
+            case GYRO:
+                float desired_omega = Utils::Calcs::map_float(m_steering, Config::min_percentage,
+                  Config::max_percentage, -Config::max_omega, Config::max_omega);
+                float pid_output = m_pid.compute(desired_omega, m_inertial_data.gyro.z);
+                steering_mixer_data.motor_speed[R] = pid_output;
+                steering_mixer_data.motor_speed[L] = -pid_output;
+                break;
+            default:
+                steering_mixer_data.motor_speed[R] = 0;
+                steering_mixer_data.motor_speed[L] = 0;
+                break;
+        }
+        switch (m_drive_mode) {
+            case AWD:
+                wheels_mixer_data.motor_speed[FR] = m_throttle;
+                wheels_mixer_data.motor_speed[RR] = m_throttle;
+                wheels_mixer_data.motor_speed[RL] = m_throttle;
+                wheels_mixer_data.motor_speed[FL] = m_throttle;
+                break;
+            case CS:
+                wheels_mixer_data.motor_speed[FR] = m_throttle * Config::cs_ratio;
+                wheels_mixer_data.motor_speed[RR] = m_throttle;
+                wheels_mixer_data.motor_speed[RL] = m_throttle;
+                wheels_mixer_data.motor_speed[FL] = m_throttle * Config::cs_ratio;
+                break;
+            case RWD:
+                wheels_mixer_data.motor_speed[FR] = 0;
+                wheels_mixer_data.motor_speed[RR] = m_throttle;
+                wheels_mixer_data.motor_speed[RL] = m_throttle;
+                wheels_mixer_data.motor_speed[FL] = 0;
+                break;
+            default:
+                wheels_mixer_data.motor_speed[FR] = 0;
+                wheels_mixer_data.motor_speed[RR] = 0;
+                wheels_mixer_data.motor_speed[RL] = 0;
+                wheels_mixer_data.motor_speed[FL] = 0;
+                break;
+        }
     } else {
         steering_mixer_data.motor_speed[R] = 0;
         steering_mixer_data.motor_speed[L] = 0;

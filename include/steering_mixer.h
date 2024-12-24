@@ -14,7 +14,7 @@ struct SteeringMixerData {
     float motor_speed[Config::num_steering];
 };
 
-enum SteeringMode { NORMAL = 0, GYRO = 1, OMEGA = 2 };
+enum SteeringMode { NORMAL = 0, GYRO = 1 };
 
 class SteeringMixer {
    public:
@@ -34,9 +34,9 @@ class SteeringMixer {
     uint16_t m_min_pulse[Config::num_steering];
     uint16_t m_max_pulse[Config::num_steering];
 
-    static constexpr SteeringMode steering_modes[] = {NORMAL, GYRO, OMEGA};
+    static constexpr SteeringMode steering_modes[] = {NORMAL, GYRO};
     static constexpr uint8_t NUM_STEERING_MODES =
       sizeof(steering_modes) / sizeof(steering_modes[0]);
 };
 
-#endif  // CONTROL_H
+#endif  // STEERING_MIXER_H
