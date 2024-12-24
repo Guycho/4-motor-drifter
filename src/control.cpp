@@ -26,6 +26,9 @@ void Control::run() {
         if (input_data.steering_mode_toggle) {
             m_steering_mode = (m_steering_mode + 1) % NUM_STEERING_MODES;
         }
+        if (input_data.drive_mode_toggle) {
+            m_drive_mode = (m_drive_mode + 1) % NUM_DRIVE_MODES;
+        }
         m_steering = input_data.steering;
         m_throttle = input_data.throttle;
         m_hb_timer.restart();
