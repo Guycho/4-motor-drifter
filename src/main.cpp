@@ -73,7 +73,7 @@ void setup() {
 
 void loop() {
     control.run();
-    if (print_timer.hasPassed(500000, true)) {
+    if (print_timer.hasPassed(500, true)) {
         ControlPrintData print_data = control.get_print_data();
         Serial.print("Throttle: ");
         Serial.print(print_data.throttle);

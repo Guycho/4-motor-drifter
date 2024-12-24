@@ -53,13 +53,6 @@ void Control::run() {
                     Config::max_omega, Config::min_percentage, Config::max_percentage),
                   Config::min_percentage, Config::max_percentage);
                 pid_output = m_pid.compute(desired_omega, current_omega);
-                Serial.print(desired_omega);
-                Serial.print(" ");
-                Serial.print(m_inertial_data.gyro.z);
-                Serial.print(" ");
-                Serial.print(pid_output);
-                Serial.print(" ");
-                Serial.println();
                 steering_mixer_data.motor_speed[R] = pid_output;
                 steering_mixer_data.motor_speed[L] = pid_output;
                 break;
@@ -68,7 +61,11 @@ void Control::run() {
                 steering_mixer_data.motor_speed[L] = 0;
                 break;
         }
-        switch (m_drive_mode) {
+        uint8_t current_drive_mode = m_drive_mode;
+        if (m_throttle < 0) {
+            current_drive_mode = AWD;
+        }
+        switch (current_drive_mode) {
             case AWD:
                 wheels_mixer_data.motor_speed[FR] = m_throttle;
                 wheels_mixer_data.motor_speed[RR] = m_throttle;
