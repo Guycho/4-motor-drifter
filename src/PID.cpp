@@ -20,17 +20,17 @@ void PID::init(const PIDConfig &config) {
     m_low_pass_alpha = config.low_pass_alpha;
     m_high_pass_alpha = config.high_Pass_alpha;
     m_use_filters = config.use_filters;
+    m_output = 0;
 }
 
 float PID::compute(float set_point, float measured_value) {
     m_set_point = set_point;
     m_measured_value = measured_value;
     m_error = m_set_point - m_measured_value;
-
     // Get the elapsed time in seconds
     m_dt = m_timer->elapsed() / 1e6;
+    if (m_dt == 0) return m_output;
     m_timer->restart();  // Restart the timer for the next iteration
-
     // Update integral term with anti-windup
     if (m_enable_integral == true) {
         m_integral += m_error * m_dt;
@@ -62,8 +62,8 @@ float PID::compute(float set_point, float measured_value) {
     // Clamp the final output
     if (output > m_max_output) output = m_max_output;
     if (output < m_min_output) output = m_min_output;
-
-    return output;
+    m_output = output;
+    return m_output;
 }
 
 void PID::enable_integral(bool enable) { m_enable_integral = enable; }

@@ -35,6 +35,7 @@ class PID {
 
     float m_set_point;       // Set point value
     float m_measured_value;  // Measured value
+    float m_output;          // PID output
 
     float m_dt;  // Time step
 

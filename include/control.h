@@ -21,6 +21,8 @@ struct ControlPrintData {
     float throttle;
     float steering;
     bool arm_enabled;
+    uint8_t steering_mode;
+    uint8_t drive_mode;
     WheelsMixerData wheels_mixer_data;
     SteeringMixerData steering_mixer_data;
     InertialData inertial_data;
@@ -36,6 +38,7 @@ class Control {
 
     void init(const ControlConfig &config);
     void run();
+    void apply_multiplier(SteeringMixerData &steering_mixer_data);
     ControlPrintData get_print_data();
 
    private:

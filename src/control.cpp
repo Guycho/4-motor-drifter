@@ -8,6 +8,7 @@ void Control::init(const ControlConfig &config) {
     m_mav_bridge = *config.mav_bridge;
     m_steering_mixer = *config.steering_mixer;
     m_wheels_mixer = *config.wheels_mixer;
+    m_pid = *config.pid;
     m_arm_enabled = false;
     m_throttle = 0;
     m_steering = 0;
@@ -37,17 +38,30 @@ void Control::run() {
     SteeringMixerData steering_mixer_data;
     WheelsMixerData wheels_mixer_data;
     if (m_arm_enabled) {
+        float desired_omega = 0.0f;
+        float pid_output = 0.0f;
+        float current_omega = 0.0f; 
         switch (m_steering_mode) {
             case NORMAL:
-                steering_mixer_data.motor_speed[R] = m_steering + Config::steering_r_l_ratio * m_steering;
+                steering_mixer_data.motor_speed[R] = m_steering;
                 steering_mixer_data.motor_speed[L] = m_steering;
                 break;
             case GYRO:
-                float desired_omega = Utils::Calcs::map_float(m_steering, Config::min_percentage,
-                  Config::max_percentage, -Config::max_omega, Config::max_omega);
-                float pid_output = m_pid.compute(desired_omega, m_inertial_data.gyro.z);
+                desired_omega = m_steering;
+                current_omega = Utils::Calcs::constrain_float(
+                  Utils::Calcs::map_float(m_inertial_data.gyro.z, -Config::max_omega,
+                    Config::max_omega, Config::min_percentage, Config::max_percentage),
+                  Config::min_percentage, Config::max_percentage);
+                pid_output = m_pid.compute(desired_omega, current_omega);
+                Serial.print(desired_omega);
+                Serial.print(" ");
+                Serial.print(m_inertial_data.gyro.z);
+                Serial.print(" ");
+                Serial.print(pid_output);
+                Serial.print(" ");
+                Serial.println();
                 steering_mixer_data.motor_speed[R] = pid_output;
-                steering_mixer_data.motor_speed[L] = -pid_output;
+                steering_mixer_data.motor_speed[L] = pid_output;
                 break;
             default:
                 steering_mixer_data.motor_speed[R] = 0;
@@ -88,14 +102,28 @@ void Control::run() {
         wheels_mixer_data.motor_speed[RL] = 0;
         wheels_mixer_data.motor_speed[FL] = 0;
     }
+    apply_multiplier(steering_mixer_data);
     m_steering_mixer.run(steering_mixer_data);
     m_wheels_mixer.run(wheels_mixer_data);
     m_print_data.throttle = m_throttle;
     m_print_data.steering = m_steering;
     m_print_data.arm_enabled = m_arm_enabled;
+    m_print_data.steering_mode = m_steering_mode;
+    m_print_data.drive_mode = m_drive_mode;
     m_print_data.wheels_mixer_data = wheels_mixer_data;
     m_print_data.steering_mixer_data = steering_mixer_data;
     m_print_data.inertial_data = m_inertial_data;
+}
+
+void Control::apply_multiplier(SteeringMixerData &steering_mixer_data) {
+    float adjustment_value =
+      (steering_mixer_data.motor_speed[R] + steering_mixer_data.motor_speed[L]) *
+      Config::steering_r_l_ratio;
+    if (steering_mixer_data.motor_speed[R] + steering_mixer_data.motor_speed[L] > 0) {
+        steering_mixer_data.motor_speed[L] -= adjustment_value;
+    } else {
+        steering_mixer_data.motor_speed[R] -= adjustment_value;
+    }
 }
 
 ControlPrintData Control::get_print_data() { return m_print_data; }

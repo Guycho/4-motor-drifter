@@ -67,12 +67,34 @@ void setup() {
     control_config.mav_bridge = &mav_bridge;
     control_config.steering_mixer = &steering_mixer;
     control_config.wheels_mixer = &wheels_mixer;
+    control_config.pid = &pid;
     control.init(control_config);
 }
 
 void loop() {
     control.run();
-    if (print_timer.hasPassed(500, true)) {
+    if (print_timer.hasPassed(500000, true)) {
+        ControlPrintData print_data = control.get_print_data();
+        Serial.print("Throttle: ");
+        Serial.print(print_data.throttle);
+        Serial.print(" Steering: ");
+        Serial.print(print_data.steering);
+        Serial.print(" Arm enabled: ");
+        Serial.print(print_data.arm_enabled);
+        Serial.print(" Steering mode: ");
+        Serial.print(print_data.steering_mode);
+        Serial.print(" Drive mode: ");
+        Serial.print(print_data.drive_mode);
+        Serial.print(" Wheels mixer data: ");
+        for (int i = 0; i < Config::num_wheels; i++) {
+            Serial.print(print_data.wheels_mixer_data.motor_speed[i]);
+            Serial.print(" ");
+        }
+        Serial.print(" Steering mixer data: ");
+        for (int i = 0; i < Config::num_steering; i++) {
+            Serial.print(print_data.steering_mixer_data.motor_speed[i]);
+            Serial.print(" ");
+        }
         Serial.println();
     }
 }
