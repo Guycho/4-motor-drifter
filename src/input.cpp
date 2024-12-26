@@ -51,11 +51,11 @@ void controller_do() {
     m_input_controller_data.lock_rear_right = r1;
     m_input_controller_data.lock_rear_left = l1;
     m_input_controller_data.trim_r = rx > 100;
-    m_input_controller_data.trim_l = rx < 100;
+    m_input_controller_data.trim_l = rx < -100;
     m_input_controller_data.trim_direction_r = right;
     m_input_controller_data.trim_direction_l = left;
 
-    if (crd) {
+      if (crd) {
         m_input_controller_data.arm_toggle = true;
     }
     if (sqd) {
@@ -69,6 +69,9 @@ void controller_do() {
         m_input_controller_data.write_to_nvm = true;
     }
 
+    if(l3d) {
+        m_input_controller_data.reset_trim = true;
+    }
         m_input_controller_data.throttle = calc_throttle(l2, r2);
         m_input_controller_data.steering = calc_steering(lx);
 
@@ -89,6 +92,7 @@ InputControllerData get_input_data(){
     m_input_controller_data.write_to_nvm = false;
     m_input_controller_data.trim_direction_r = false;
     m_input_controller_data.trim_direction_l = false;
+    m_input_controller_data.reset_trim = false;
     m_input_controller_data.new_data = false;
     return temp_data;
 }

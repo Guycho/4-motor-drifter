@@ -22,6 +22,7 @@ struct InputControllerData {
     bool trim_l;
     bool trim_direction_r;
     bool trim_direction_l;
+    bool reset_trim;
     bool new_data;
 };
 struct InputControllerConfig {

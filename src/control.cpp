@@ -15,7 +15,7 @@ void Control::init(const ControlConfig &config) {
     m_throttle = 0;
     m_steering = 0;
     NUM_STEERING_MODES = m_steering_mixer.get_num_of_steering_modes();
-    NUM_DRIVE_MODES = m_wheels_mixer.get_num_of_drive_modes();   
+    NUM_DRIVE_MODES = m_wheels_mixer.get_num_of_drive_modes();
 }
 
 void Control::run() {
@@ -23,6 +23,7 @@ void Control::run() {
     m_inertial_data = m_mav_bridge.get_inertial_data();
     InputControllerData input_data = get_input_data();
     if (input_data.new_data) {
+        apply_trim(input_data);
         if (input_data.arm_toggle) {
             m_arm_enabled = !m_arm_enabled;
         }
@@ -44,7 +45,7 @@ void Control::run() {
     if (m_arm_enabled) {
         float desired_omega = 0.0f;
         float pid_output = 0.0f;
-        float current_omega = 0.0f; 
+        float current_omega = 0.0f;
         switch (m_steering_mode) {
             case NORMAL:
                 steering_mixer_data.motor_speed[R] = m_steering;
@@ -131,6 +132,35 @@ void Control::apply_multiplier(SteeringMixerData &steering_mixer_data) {
         steering_mixer_data.motor_speed[L] -= adjustment_value;
     } else {
         steering_mixer_data.motor_speed[R] -= adjustment_value;
+    }
+}
+
+void Control::apply_trim(InputControllerData &input_data) {
+    if (input_data.trim_r) {
+        if (input_data.trim_direction_r) {
+            m_nvm_data.steering_mixer_data.motor_speed[R] += Config::trim_increment;
+        }
+        if (input_data.trim_direction_l) {
+            m_nvm_data.steering_mixer_data.motor_speed[R] -= Config::trim_increment;
+        }
+        if (input_data.reset_trim) {
+            m_nvm_data.steering_mixer_data.motor_speed[R] = 0;
+        }
+    }
+    if (input_data.trim_l) {
+        if (input_data.trim_direction_r) {
+            m_nvm_data.steering_mixer_data.motor_speed[L] += Config::trim_increment;
+        }
+        if (input_data.trim_direction_l) {
+            m_nvm_data.steering_mixer_data.motor_speed[L] -= Config::trim_increment;
+        }
+        if (input_data.reset_trim) {
+            m_nvm_data.steering_mixer_data.motor_speed[L] = 0;
+        }
+    }
+    m_steering_mixer.set_trim(m_nvm_data.steering_mixer_data);
+    if (input_data.write_to_nvm) {
+        m_nvm.set_data(m_nvm_data);
     }
 }
 

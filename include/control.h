@@ -41,7 +41,7 @@ class Control {
     void init(const ControlConfig &config);
     void run();
     void apply_multiplier(SteeringMixerData &steering_mixer_data);
-    void apply_steering_trim(InputControllerData &input_data);
+    void apply_trim(InputControllerData &input_data);
     ControlPrintData get_print_data();
 
    private:

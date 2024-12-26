@@ -13,6 +13,7 @@ const float min_percentage = -100.0;
 const float max_percentage = 100.0;
 const float max_omega = 360; // deg/s
 const float steering_r_l_ratio = 0.1;
+const float trim_increment = 0.01;
 const float cs_ratio = 0.7;
 namespace Motor {
 namespace Wheel {
