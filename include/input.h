@@ -15,6 +15,8 @@ struct InputControllerData {
     bool arm_toggle;
     bool steering_mode_toggle;
     bool drive_mode_toggle;
+    bool lock_rear_right;
+    bool lock_rear_left;
     bool new_data;
 };
 struct InputControllerConfig {

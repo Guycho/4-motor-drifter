@@ -3,7 +3,9 @@
 
 #include <EEPROM.h>
 
-struct EepromData {};
+struct EepromData {
+    
+};
 
 class Eeprom {
    public:

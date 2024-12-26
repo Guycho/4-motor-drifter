@@ -7,12 +7,7 @@ void remove_paired_devices();
 float calc_throttle(uint8_t l2, uint8_t r2);
 float calc_steering(int8_t lx);
 
-float m_throttle;
-float m_steering;
-bool m_arm_toggle;
-bool m_steering_mode_toggle;
-bool m_drive_mode_toggle;
-bool m_new_data;
+InputControllerData m_input_controller_data;
 
 uint8_t m_dead_band;
 
@@ -53,37 +48,35 @@ void controller_do() {
     int16_t gx = PS4.GyrX(), gy = PS4.GyrY(), gz = PS4.GyrZ(), ax = PS4.AccX(), ay = PS4.AccY(),
             az = PS4.AccZ();
 
+    m_input_controller_data.lock_rear_right = r1d;
+    m_input_controller_data.lock_rear_left = l1d;
+
     if (crd) {
-        m_arm_toggle = true;
+        m_input_controller_data.arm_toggle = true;
     }
     if (sqd) {
-        m_steering_mode_toggle = true;
+        m_input_controller_data.steering_mode_toggle = true;
     }
     if (cid) {
-        m_drive_mode_toggle = true;
+        m_input_controller_data.drive_mode_toggle = true;
     }
 
-    m_throttle = calc_throttle(l2, r2);
-    m_steering = calc_steering(lx);
+    m_input_controller_data.throttle = calc_throttle(l2, r2);
+    m_input_controller_data.steering = calc_steering(lx);
 
-    m_new_data = true;
+    m_input_controller_data.new_data = true;
 }
 
 InputControllerData get_input_data(){
-    InputControllerData data;
-    data.throttle = m_throttle;
-    data.steering = m_steering;
-    data.arm_toggle = m_arm_toggle;
-    data.steering_mode_toggle = m_steering_mode_toggle;
-    data.drive_mode_toggle = m_drive_mode_toggle;
-    data.new_data = m_new_data;
-    m_throttle = 0;
-    m_steering = 0;
-    m_arm_toggle = false;
-    m_steering_mode_toggle = false;
-    m_drive_mode_toggle = false;
-    m_new_data = false;
-    return data;
+    m_input_controller_data.throttle = 0;
+    m_input_controller_data.steering = 0;
+    m_input_controller_data.arm_toggle = false;
+    m_input_controller_data.steering_mode_toggle = false;
+    m_input_controller_data.drive_mode_toggle = false;
+    m_input_controller_data.lock_rear_right = false;
+    m_input_controller_data.lock_rear_left = false;
+    m_input_controller_data.new_data = false;
+    return m_input_controller_data;
 }
 
 float calc_throttle(uint8_t l2, uint8_t r2) {
