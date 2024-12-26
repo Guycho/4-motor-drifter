@@ -9,12 +9,14 @@
 #include "utils.h"
 #include "PID.h"
 #include "wheels_mixer.h"
+#include "nvm.h"
 
 struct ControlConfig {
     MavBridge *mav_bridge;
     SteeringMixer *steering_mixer;
     WheelsMixer *wheels_mixer;
     PID *pid;
+    NVM *nvm;
 };
 
 struct ControlPrintData {
@@ -39,6 +41,7 @@ class Control {
     void init(const ControlConfig &config);
     void run();
     void apply_multiplier(SteeringMixerData &steering_mixer_data);
+    void apply_steering_trim(InputControllerData &input_data);
     ControlPrintData get_print_data();
 
    private:
@@ -48,8 +51,10 @@ class Control {
     SteeringMixer m_steering_mixer;
     WheelsMixer m_wheels_mixer;
     PID m_pid;
+    NVM m_nvm;
     ControlPrintData m_print_data;
     InertialData m_inertial_data;
+    NVMData m_nvm_data;    
 
     uint8_t NUM_STEERING_MODES;
     uint8_t NUM_DRIVE_MODES;

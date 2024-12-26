@@ -20,9 +20,16 @@ void NVM::write() {
 
 void NVM::read() { EEPROM.get(0, m_data); }
 
-void NVM::checkForChanges() {
+void NVM::check_for_changes() {
     if (memcmp(&m_data, &m_last_data, sizeof(NVMData)) != 0) {
         write();
         m_last_data = m_data;  // Update the last known state
     }
+}
+
+NVMData NVM::get_data() const { return m_data; }
+
+void NVM::set_data(const NVMData& data) {
+    m_data = data;
+    check_for_changes();
 }

@@ -9,11 +9,13 @@ void Control::init(const ControlConfig &config) {
     m_steering_mixer = *config.steering_mixer;
     m_wheels_mixer = *config.wheels_mixer;
     m_pid = *config.pid;
+    m_nvm = *config.nvm;
+    m_nvm_data = m_nvm.get_data();
     m_arm_enabled = false;
     m_throttle = 0;
     m_steering = 0;
     NUM_STEERING_MODES = m_steering_mixer.get_num_of_steering_modes();
-    NUM_DRIVE_MODES = m_wheels_mixer.get_num_of_drive_modes();
+    NUM_DRIVE_MODES = m_wheels_mixer.get_num_of_drive_modes();   
 }
 
 void Control::run() {

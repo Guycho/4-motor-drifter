@@ -17,6 +17,11 @@ struct InputControllerData {
     bool drive_mode_toggle;
     bool lock_rear_right;
     bool lock_rear_left;
+    bool write_to_nvm;
+    bool trim_r;
+    bool trim_l;
+    bool trim_direction_r;
+    bool trim_direction_l;
     bool new_data;
 };
 struct InputControllerConfig {

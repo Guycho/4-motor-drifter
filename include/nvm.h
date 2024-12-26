@@ -2,9 +2,10 @@
 #define NVM_H
 
 #include <EEPROM.h>
+#include "steering_mixer.h"
 
 struct NVMData {
-    // Add your data members here
+    SteeringMixerData steering_mixer_data;
 };
 
 class NVM {
@@ -14,7 +15,9 @@ class NVM {
     void init();   // Method to start the NVM
     void write();  // Method to write the NVM
     void read();   // Method to read the NVM
-    void checkForChanges();  // Method to check for changes and write if necessary
+    void check_for_changes();  // Method to check for changes and write if necessary
+    NVMData get_data() const;  // Method to get the NVM data
+    void set_data(const NVMData& data);  // Method to set the NVM data
 
    private:
     NVMData m_data;  // Variable to store the NVM data
