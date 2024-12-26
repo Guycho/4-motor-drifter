@@ -1,10 +1,28 @@
 #include "nvm.h"
 
-Eeprom::Eeprom() {}
-Eeprom::~Eeprom() {}
+NVM::NVM() {
+    // Constructor implementation
+}
 
-void Eeprom::init() {}
+NVM::~NVM() {
+    // Destructor implementation
+}
 
-void Eeprom::write() {}
+void NVM::init() {
+    EEPROM.begin(sizeof(NVMData));
+    read();
+}
 
-void Eeprom::read() {}
+void NVM::write() {
+    EEPROM.put(0, m_data);
+    EEPROM.commit();
+}
+
+void NVM::read() { EEPROM.get(0, m_data); }
+
+void NVM::checkForChanges() {
+    if (memcmp(&m_data, &m_last_data, sizeof(NVMData)) != 0) {
+        write();
+        m_last_data = m_data;  // Update the last known state
+    }
+}

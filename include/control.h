@@ -60,6 +60,8 @@ class Control {
     bool m_arm_enabled = false;
     float m_throttle = 0;
     float m_steering = 0;
+    bool m_lock_rear_right = false;
+    bool m_lock_rear_left = false;
 };
 
 #endif  // CONTROL_H

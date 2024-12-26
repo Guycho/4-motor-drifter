@@ -3,18 +3,22 @@
 
 #include <EEPROM.h>
 
-struct EepromData {
-    
+struct NVMData {
+    // Add your data members here
 };
 
-class Eeprom {
+class NVM {
    public:
-    Eeprom();      // Constructor
-    ~Eeprom();     // Destructor
-    void init();   // Method to start the EEPROM
-    void write();  // Method to write the EEPROM
-    void read();   // Method to read the EEPROM
+    NVM();         // Constructor
+    ~NVM();        // Destructor
+    void init();   // Method to start the NVM
+    void write();  // Method to write the NVM
+    void read();   // Method to read the NVM
+    void checkForChanges();  // Method to check for changes and write if necessary
+
    private:
-    EepromData m_data;  // Variable to store the EEPROM data
+    NVMData m_data;  // Variable to store the NVM data
+    NVMData m_last_data;  // Variable to store the last known state of the EEPROM data
 };
+
 #endif  // NVM_H

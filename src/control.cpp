@@ -33,6 +33,8 @@ void Control::run() {
         }
         m_steering = input_data.steering;
         m_throttle = input_data.throttle;
+        m_lock_rear_right = input_data.lock_rear_right;
+        m_lock_rear_left = input_data.lock_rear_left;
         m_hb_timer.restart();
     }
     SteeringMixerData steering_mixer_data;
@@ -91,6 +93,12 @@ void Control::run() {
                 wheels_mixer_data.motor_speed[FL] = 0;
                 break;
         }
+        if (m_lock_rear_right) {
+            wheels_mixer_data.motor_speed[RR] = Config::min_percentage;
+        }
+        if (m_lock_rear_left) {
+            wheels_mixer_data.motor_speed[RL] = Config::min_percentage;
+        }
     } else {
         steering_mixer_data.motor_speed[R] = 0;
         steering_mixer_data.motor_speed[L] = 0;
@@ -99,6 +107,7 @@ void Control::run() {
         wheels_mixer_data.motor_speed[RL] = 0;
         wheels_mixer_data.motor_speed[FL] = 0;
     }
+
     apply_multiplier(steering_mixer_data);
     m_steering_mixer.run(steering_mixer_data);
     m_wheels_mixer.run(wheels_mixer_data);

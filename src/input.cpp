@@ -48,8 +48,8 @@ void controller_do() {
     int16_t gx = PS4.GyrX(), gy = PS4.GyrY(), gz = PS4.GyrZ(), ax = PS4.AccX(), ay = PS4.AccY(),
             az = PS4.AccZ();
 
-    m_input_controller_data.lock_rear_right = r1d;
-    m_input_controller_data.lock_rear_left = l1d;
+    m_input_controller_data.lock_rear_right = r1;
+    m_input_controller_data.lock_rear_left = l1;
 
     if (crd) {
         m_input_controller_data.arm_toggle = true;
@@ -68,6 +68,7 @@ void controller_do() {
 }
 
 InputControllerData get_input_data(){
+    InputControllerData temp_data = m_input_controller_data;
     m_input_controller_data.throttle = 0;
     m_input_controller_data.steering = 0;
     m_input_controller_data.arm_toggle = false;
@@ -76,7 +77,7 @@ InputControllerData get_input_data(){
     m_input_controller_data.lock_rear_right = false;
     m_input_controller_data.lock_rear_left = false;
     m_input_controller_data.new_data = false;
-    return m_input_controller_data;
+    return temp_data;
 }
 
 float calc_throttle(uint8_t l2, uint8_t r2) {
