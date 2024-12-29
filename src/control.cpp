@@ -158,6 +158,28 @@ void Control::apply_trim(InputControllerData &input_data) {
             m_nvm_data.steering_mixer_data.motor_speed[L] = 0;
         }
     }
+    if (input_data.trim_throttle) {
+        if (input_data.trim_direction_f) {
+            m_throttle_trim += Config::trim_increment;
+        }
+        if (input_data.trim_direction_b) {
+            m_throttle_trim -= Config::trim_increment;
+        }
+        if (input_data.reset_trim) {
+            m_throttle_trim = 0;
+        }
+    }   
+    if (input_data.trim_steering) {
+        if (input_data.trim_direction_r) {
+            m_steering_trim += Config::trim_increment;
+        }
+        if (input_data.trim_direction_l) {
+            m_steering_trim -= Config::trim_increment;
+        }
+        if (input_data.reset_trim) {
+            m_steering_trim = 0;
+        }
+    }
     m_steering_mixer.set_trim(m_nvm_data.steering_mixer_data);
     if (input_data.write_to_nvm) {
         m_nvm.set_data(m_nvm_data);

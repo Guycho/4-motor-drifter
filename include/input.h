@@ -20,8 +20,12 @@ struct InputControllerData {
     bool write_to_nvm;
     bool trim_r;
     bool trim_l;
+    bool trim_throttle;
+    bool trim_steering;
     bool trim_direction_r;
     bool trim_direction_l;
+    bool trim_direction_f;
+    bool trim_direction_b;
     bool reset_trim;
     bool new_data;
 };

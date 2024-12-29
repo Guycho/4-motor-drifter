@@ -37,9 +37,9 @@ void controller_do() {
             l1d = PS4.event.button_down.l1, r1d = PS4.event.button_down.r1,
             l3d = PS4.event.button_down.l3, r3d = PS4.event.button_down.r3;
 
-    boolean sq = PS4.Square(), tr = PS4.Triangle(), cr = PS4.Cross(), ci = PS4.Circle(), 
-            up = PS4.Up(), right = PS4.Right(), down = PS4.Down(), left = PS4.Left(), 
-            l1 = PS4.L1(), r1 = PS4.R1();
+    boolean sq = PS4.Square(), tr = PS4.Triangle(), cr = PS4.Cross(), ci = PS4.Circle(),
+            up = PS4.Up(), right = PS4.Right(), down = PS4.Down(), left = PS4.Left(), l1 = PS4.L1(),
+            r1 = PS4.R1();
 
     int8_t lx = PS4.LStickX(), ly = PS4.LStickY(), rx = PS4.RStickX(), ry = PS4.RStickY();
 
@@ -52,10 +52,14 @@ void controller_do() {
     m_input_controller_data.lock_rear_left = l1;
     m_input_controller_data.trim_r = rx > 100;
     m_input_controller_data.trim_l = rx < -100;
+    m_input_controller_data.trim_throttle = ry < -100;
+    m_input_controller_data.trim_steering = ry > 100;
     m_input_controller_data.trim_direction_r = right;
     m_input_controller_data.trim_direction_l = left;
+    m_input_controller_data.trim_direction_f = up;
+    m_input_controller_data.trim_direction_b = down;
 
-      if (crd) {
+    if (crd) {
         m_input_controller_data.arm_toggle = true;
     }
     if (sqd) {
@@ -65,20 +69,20 @@ void controller_do() {
         m_input_controller_data.drive_mode_toggle = true;
     }
 
-    if(r3d) {
+    if (r3d) {
         m_input_controller_data.write_to_nvm = true;
     }
 
-    if(l3d) {
+    if (l3d) {
         m_input_controller_data.reset_trim = true;
     }
-        m_input_controller_data.throttle = calc_throttle(l2, r2);
-        m_input_controller_data.steering = calc_steering(lx);
+    m_input_controller_data.throttle = calc_throttle(l2, r2);
+    m_input_controller_data.steering = calc_steering(lx);
 
-        m_input_controller_data.new_data = true;
+    m_input_controller_data.new_data = true;
 }
 
-InputControllerData get_input_data(){
+InputControllerData get_input_data() {
     InputControllerData temp_data = m_input_controller_data;
     m_input_controller_data.throttle = 0;
     m_input_controller_data.steering = 0;
@@ -89,9 +93,13 @@ InputControllerData get_input_data(){
     m_input_controller_data.lock_rear_left = false;
     m_input_controller_data.trim_r = false;
     m_input_controller_data.trim_l = false;
+    m_input_controller_data.trim_throttle = false;
+    m_input_controller_data.trim_steering = false;
     m_input_controller_data.write_to_nvm = false;
     m_input_controller_data.trim_direction_r = false;
     m_input_controller_data.trim_direction_l = false;
+    m_input_controller_data.trim_direction_f = false;
+    m_input_controller_data.trim_direction_b = false;
     m_input_controller_data.reset_trim = false;
     m_input_controller_data.new_data = false;
     return temp_data;
