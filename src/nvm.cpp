@@ -11,9 +11,11 @@ NVM::~NVM() {
 void NVM::init() {
     EEPROM.begin(sizeof(NVMData));
     read();
-    if (m_data.steering_mixer_data.motor_speed[R] != m_data.steering_mixer_data.motor_speed[R] || m_data.steering_mixer_data.motor_speed[L] != m_data.steering_mixer_data.motor_speed[L]) {
+    if (m_data.steering_mixer_data.motor_speed[R] != m_data.steering_mixer_data.motor_speed[R] || m_data.steering_mixer_data.motor_speed[L] != m_data.steering_mixer_data.motor_speed[L] || m_data.throttle_trim != m_data.throttle_trim || m_data.steering_trim != m_data.steering_trim) {
         m_data.steering_mixer_data.motor_speed[R] = 0;
         m_data.steering_mixer_data.motor_speed[L] = 0;
+        m_data.throttle_trim = 0;
+        m_data.steering_trim = 0;
         write();
     }
 }
@@ -21,12 +23,6 @@ void NVM::init() {
 void NVM::write() {
     EEPROM.put(0, m_data);
     EEPROM.commit();
-    Serial.print("Writing to NVM");
-    Serial.print("   ");
-    Serial.print(m_data.steering_mixer_data.motor_speed[R]);
-    Serial.print("   ");
-    Serial.print(m_data.steering_mixer_data.motor_speed[L]);
-    Serial.println();
 }
 
 void NVM::read() { EEPROM.get(0, m_data); }

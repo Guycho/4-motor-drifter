@@ -34,8 +34,8 @@ void Control::run() {
         if (input_data.drive_mode_toggle) {
             m_drive_mode = (m_drive_mode + 1) % NUM_DRIVE_MODES;
         }
-        m_steering = input_data.steering;
-        m_throttle = input_data.throttle;
+        m_steering = input_data.steering + m_nvm_data.steering_trim;
+        m_throttle = input_data.throttle + m_nvm_data.throttle_trim;
         m_lock_rear_right = input_data.lock_rear_right;
         m_lock_rear_left = input_data.lock_rear_left;
         m_hb_timer.restart();
@@ -160,24 +160,24 @@ void Control::apply_trim(InputControllerData &input_data) {
     }
     if (input_data.trim_throttle) {
         if (input_data.trim_direction_f) {
-            m_throttle_trim += Config::trim_increment;
+            m_nvm_data.throttle_trim += Config::trim_increment;
         }
         if (input_data.trim_direction_b) {
-            m_throttle_trim -= Config::trim_increment;
+            m_nvm_data.throttle_trim -= Config::trim_increment;
         }
         if (input_data.reset_trim) {
-            m_throttle_trim = 0;
+            m_nvm_data.throttle_trim = 0;
         }
     }   
     if (input_data.trim_steering) {
         if (input_data.trim_direction_r) {
-            m_steering_trim += Config::trim_increment;
+            m_nvm_data.steering_trim += Config::trim_increment;
         }
         if (input_data.trim_direction_l) {
-            m_steering_trim -= Config::trim_increment;
+            m_nvm_data.steering_trim -= Config::trim_increment;
         }
         if (input_data.reset_trim) {
-            m_steering_trim = 0;
+            m_nvm_data.steering_trim = 0;
         }
     }
     m_steering_mixer.set_trim(m_nvm_data.steering_mixer_data);

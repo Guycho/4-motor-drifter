@@ -6,6 +6,8 @@
 
 struct NVMData {
     SteeringMixerData steering_mixer_data;
+    float throttle_trim;
+    float steering_trim;
 };
 
 class NVM {
