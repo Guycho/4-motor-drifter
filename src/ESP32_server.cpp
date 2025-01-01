@@ -17,10 +17,20 @@ void ESP32Server::init(const ESP32ServerConfig& config) {
     m_server.on("/", HTTP_GET, std::bind(&ESP32Server::handle_root, this));
     m_server.onNotFound(std::bind(&ESP32Server::handle_not_found, this));
     m_server.begin();
+    Serial.println("Server started");
 }
 
-void ESP32Server::handle_client() { m_server.handleClient(); }
+void ESP32Server::handle_client() {
+    m_server.handleClient();
+    // Serial.println("Client handled");
+}
 
-void ESP32Server::handle_root() { m_server.send(200, "text/plain", "Hello, world!"); }
+void ESP32Server::handle_root() {
+    m_server.send(200, "text/plain", "Hello, world!");
+    Serial.println("root accesses");
+}
 
-void ESP32Server::handle_not_found() { m_server.send(404, "text/plain", "404: Not Found"); }
+void ESP32Server::handle_not_found() {
+    m_server.send(404, "text/plain", "404: Not Found");
+    Serial.println("Not found accessed");
+}
