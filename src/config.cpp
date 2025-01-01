@@ -1,6 +1,11 @@
 #include "config.h"
 
 namespace Config {
+namespace Server {
+const char *ssid = "drifter";
+const char *password = "drifter123";
+const int port = 80;
+}  // namespace Server
 namespace Motor {
 namespace Wheel {
 const uint8_t pin[num_wheels] = {1, 2, 3, 4};

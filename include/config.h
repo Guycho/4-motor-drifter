@@ -15,6 +15,11 @@ const float max_omega = 360; // deg/s
 const float steering_r_l_ratio = 0.1;
 const float trim_increment = 0.01;
 const float cs_ratio = 0.7;
+namespace Server {
+extern const char *ssid;
+extern const char *password;
+extern const int port;
+}  // namespace Server
 namespace Motor {
 namespace Wheel {
 extern const uint8_t pin[];

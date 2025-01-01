@@ -8,6 +8,7 @@
 #include "wheels_mixer.h"
 #include "steering_mixer.h"
 #include "nvm.h"
+#include "ESP32_server.h"
 
 
 Chrono print_timer;
@@ -17,6 +18,8 @@ WheelsMixer wheels_mixer;
 PID pid;
 NVM nvm;
 Control control;
+ESP32Server server;
+
 
 void setup() {
     Serial.begin(9600);
@@ -74,6 +77,12 @@ void setup() {
     control_config.pid = &pid;
     control_config.nvm = &nvm;
     control.init(control_config);
+
+    ESP32ServerConfig server_config;
+    server_config.ssid = Config::Server::ssid;
+    server_config.password = Config::Server::password;
+    server_config.port = Config::Server::port;
+    server.init(server_config);
 }
 
 void loop() {
