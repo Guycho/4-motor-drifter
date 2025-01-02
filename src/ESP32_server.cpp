@@ -1,6 +1,6 @@
 #include "ESP32_server.h"
 
-ESP32Server::ESP32Server() {}
+ESP32Server::ESP32Server() : m_control(nullptr) {}
 
 ESP32Server::~ESP32Server() {}
 
@@ -18,15 +18,17 @@ void ESP32Server::init(const ESP32ServerConfig& config) {
     }
 
     m_server.on("/", HTTP_GET, std::bind(&ESP32Server::handle_root, this));
+    m_server.on("/raphael.min.js", HTTP_GET,
+      std::bind(&ESP32Server::handle_file, this, "/raphael.min.js"));
+    m_server.on("/justgage.min.js", HTTP_GET,
+      std::bind(&ESP32Server::handle_file, this, "/justgage.min.js"));
     m_server.on("/data", HTTP_GET, std::bind(&ESP32Server::handle_data, this));
     m_server.onNotFound(std::bind(&ESP32Server::handle_not_found, this));
     m_server.begin();
     Serial.println("Server started");
 }
 
-void ESP32Server::handle_client() {
-    m_server.handleClient();
-}
+void ESP32Server::handle_client() { m_server.handleClient(); }
 
 void ESP32Server::handle_root() {
     File file = SPIFFS.open("/index.html", "r");
@@ -42,9 +44,24 @@ void ESP32Server::handle_root() {
     m_server.send(200, "text/html", html);
 }
 
-void ESP32Server::handle_data() {
+void ESP32Server::handle_file(const char* path) {
+    File file = SPIFFS.open(path, "r");
+    if (!file) {
+        Serial.println("Failed to open file");
+        m_server.send(404, "text/plain", "File Not Found");
+        return;
+    }
 
-    // Replace with actual data fetching logic
+    String contentType = "text/plain";
+    if (String(path).endsWith(".js")) contentType = "application/javascript";
+    if (String(path).endsWith(".css")) contentType = "text/css";
+    if (String(path).endsWith(".html")) contentType = "text/html";
+
+    m_server.streamFile(file, contentType);
+    file.close();
+}
+
+void ESP32Server::handle_data() {
     ControlPrintData control_data = m_control->get_print_data();
     StaticJsonDocument<1024> doc;
     doc["throttle"] = control_data.throttle;
@@ -52,13 +69,21 @@ void ESP32Server::handle_data() {
     doc["arm_enabled"] = control_data.arm_enabled;
     doc["steering_mode"] = control_data.steering_mode;
     doc["drive_mode"] = control_data.drive_mode;
- 
+    doc["motor1_rpm"] = 5421;
+    doc["motor1_throttle"] = 71;
+    doc["motor2_rpm"] = 5421;
+    doc["motor2_throttle"] = 71;
+    doc["motor3_rpm"] = 5421;
+    doc["motor3_throttle"] = 71;
+    doc["motor4_rpm"] = 5421;
+    doc["motor4_throttle"] = 71;
+    doc["g_force_x"] = 0.5;
+    doc["g_force_y"] = -0.25;
+
     String json;
     serializeJson(doc, json);
 
     m_server.send(200, "application/json", json);
 }
 
-void ESP32Server::handle_not_found() {
-    m_server.send(404, "text/plain", "404: Not Found");
-}
+void ESP32Server::handle_not_found() { m_server.send(404, "text/plain", "File Not Found"); }

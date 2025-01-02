@@ -88,7 +88,7 @@ void setup() {
 void loop() {
     control.run();
     server.handle_client();
-    if (print_timer.hasPassed(2500, true)) {
+    if (print_timer.hasPassed(250000, true)) {
         ControlPrintData print_data = control.get_print_data();
         Serial.print("Throttle: ");
         Serial.print(print_data.throttle);

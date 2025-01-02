@@ -1,9 +1,107 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>ESP32 Server</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.3.0/raphael.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/justgage/1.3.5/justgage.min.js"></script>
+    <title>Drifter telemetry</title>
+    <script src="/raphael.min.js"></script>
+    <script src="/justgage.min.js"></script>
+    <style>
+        .bar-container {
+            width: 100%;
+            background-color: white;
+        }
+
+        .bar-green {
+            width: 0%;
+            height: 15px;
+            background-color: green;
+            text-align: right;
+            padding-right: 10px;
+            color: white;
+        }
+
+        .bar-red {
+            width: 0%;
+            height: 15px;
+            background-color: red;
+            text-align: right;
+            padding-right: 10px;
+            color: white;
+        }
+        
+
+        .bar-label {
+            margin-top: 5px;
+        }
+
+        .g-force-container {
+            width: 200px;
+            height: 200px;
+            border: 1px solid black;
+            position: relative;
+            margin-top: 20px;
+        }
+
+        .g-force-dot {
+            width: 10px;
+            height: 10px;
+            background-color: blue;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .g-force-cross {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            transform: translate(-50%, -50%);
+        }
+
+        .g-force-cross .horizontal,
+        .g-force-cross .vertical {
+            position: absolute;
+            background-color: black;
+        }
+
+        .g-force-cross .horizontal {
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 1px;
+        }
+
+        .g-force-cross .vertical {
+            top: 0;
+            left: 50%;
+            width: 1px;
+            height: 100%;
+        }
+
+        .g-force-value {
+            position: absolute;
+            background-color: white;
+            padding: 2px 5px;
+            border: 1px solid black;
+            border-radius: 3px;
+        }
+
+        .g-force-value.x {
+            top: 100%;
+            left: 50%;
+            transform: translate(-50%, 0);
+        }
+
+        .g-force-value.y {
+            top: 50%;
+            left: 100%;
+            transform: translate(0, -50%);
+        }
+
+    </style>
     <script>
         let throttleGauge, steeringGauge;
 
@@ -16,6 +114,40 @@
                     document.getElementById('arm_enabled').innerText = data.arm_enabled;
                     document.getElementById('steering_mode').innerText = data.steering_mode;
                     document.getElementById('drive_mode').innerText = data.drive_mode;
+
+                    // Update motor 1 bars
+                    document.getElementById('motor1-throttle-bar').style.width = data.motor1_throttle + '%';
+                    document.getElementById('motor1-throttle-bar').innerText = data.motor1_throttle + '%';
+                    document.getElementById('motor1-rpm-bar').style.width = (data.motor1_rpm / 100) + '%';
+                    document.getElementById('motor1-rpm-bar').innerText = data.motor1_rpm + ' RPM';
+
+                    // Update motor 2 bars
+                    document.getElementById('motor2-throttle-bar').style.width = data.motor2_throttle + '%';
+                    document.getElementById('motor2-throttle-bar').innerText = data.motor2_throttle + '%';
+                    document.getElementById('motor2-rpm-bar').style.width = (data.motor2_rpm / 100) + '%';
+                    document.getElementById('motor2-rpm-bar').innerText = data.motor2_rpm + ' RPM';
+
+                    // Update motor 3 bars
+                    document.getElementById('motor3-throttle-bar').style.width = data.motor3_throttle + '%';
+                    document.getElementById('motor3-throttle-bar').innerText = data.motor3_throttle + '%';
+                    document.getElementById('motor3-rpm-bar').style.width = (data.mot,or3_rpm / 100) + '%';
+                    document.getElementById('motor3-rpm-bar').innerText = data.motor3_rpm + ' RPM';
+
+                    // Update motor 4 bars
+                    document.getElementById('motor4-throttle-bar').style.width = data.motor4_throttle + '%';
+                    document.getElementById('motor4-throttle-bar').innerText = data.motor4_throttle + '%';
+                    document.getElementById('motor4-rpm-bar').style.width = (data.motor4_rpm / 100) + '%';
+                    document.getElementById('motor4-rpm-bar').innerText = data.motor4_rpm + ' RPM';
+
+                    // Update G-force dot
+                    const gForceDot = document.getElementById('g-force-dot');
+                    const gForceContainer = document.getElementById('g-force-container');
+                    const maxGForce = 2; // Example max G-force value
+                    const x = (data.g_force_x / maxGForce) * (gForceContainer.clientWidth / 2) + (gForceContainer.clientWidth / 2);
+                    const y = (data.g_force_y / maxGForce) * (gForceContainer.clientHeight / 2) + (gForceContainer.clientHeight / 2);
+                    gForceDot.style.left = `${x}px`;
+                    gForceDot.style.top = `${y}px`;
+                  
                 })
                 .catch(error => console.error('Error fetching data:', error));
         }
@@ -24,7 +156,7 @@
             throttleGauge = new JustGage({
                 id: 'throttle-gauge',
                 value: 0,
-                min: 0,
+                min: -100,
                 max: 100,
                 title: 'Throttle'
             });
@@ -42,11 +174,55 @@
     </script>
 </head>
 <body>
-    <h1>ESP32 Server</h1>
+    <h1>Drifter telemetry</h1>
     <div id="throttle-gauge" style="width:200px; height:160px;"></div>
     <div id="steering-gauge" style="width:200px; height:160px;"></div>
     <p>Arm enabled: <span id="arm_enabled">false</span></p>
     <p>Steering mode: <span id="steering_mode">0</span></p>
     <p>Drive mode: <span id="drive_mode">0</span></p>
+
+    <h2>Motor 1</h2>
+    <div class="bar-container">
+        <div id="motor1-throttle-bar" class="bar-green"></div>
+    </div>
+    <div class="bar-container">
+        <div id="motor1-rpm-bar" class="bar-red"></div>
+    </div>
+
+    <h2>Motor 2</h2>
+    <div class="bar-container">
+        <div id="motor2-throttle-bar" class="bar-green"></div>
+    </div>
+    <div class="bar-container">
+        <div id="motor2-rpm-bar" class="bar-red"></div>
+    </div>
+
+    <h2>Motor 3</h2>
+    <div class="bar-container">
+        <div id="motor3-throttle-bar" class="bar-green"></div>
+    </div>
+    <div class="bar-container">
+        <div id="motor3-rpm-bar" class="bar-red"></div>
+    </div>
+
+    <h2>Motor 4</h2>
+    <div class="bar-container">
+        <div id="motor4-throttle-bar" class="bar-green"></div>
+    </div>
+    <div class="bar-container">
+        <div id="motor4-rpm-bar" class="bar-red"></div>
+    </div>
+
+    <h2>G-Force</h2>
+    <div id="g-force-container" class="g-force-container">
+        <div class="g-force-cross">
+            <div class="horizontal"></div>
+            <div class="vertical"></div>
+        </div>
+        <div id="g-force-dot" class="g-force-dot"></div>
+        <div id="g-force-x-value" class="g-force-value x">0.00</div>
+        <div id="g-force-y-value" class="g-force-value y">0.00</div>
+    </div>
+
 </body>
 </html>

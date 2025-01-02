@@ -29,6 +29,7 @@ class ESP32Server {
 
     void handle_root();
     void handle_data();
+    void handle_file(const char* path);
     void handle_not_found();
 };
 
