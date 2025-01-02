@@ -81,14 +81,14 @@ void setup() {
     ESP32ServerConfig server_config;
     server_config.ssid = Config::Server::ssid;
     server_config.password = Config::Server::password;
-    server_config.port = Config::Server::port;
+    server_config.control = &control;
     server.init(server_config);
 }
 
 void loop() {
     control.run();
     server.handle_client();
-    if (print_timer.hasPassed(50000, true)) {
+    if (print_timer.hasPassed(2500, true)) {
         ControlPrintData print_data = control.get_print_data();
         Serial.print("Throttle: ");
         Serial.print(print_data.throttle);

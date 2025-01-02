@@ -1,13 +1,17 @@
 #ifndef ESP32_SERVER_H
 #define ESP32_SERVER_H
 
+#include <ArduinoJson.h>
+#include <FS.h>
+#include <SPIFFS.h>
 #include <WebServer.h>
 #include <WiFi.h>
+#include "control.h"
 
 struct ESP32ServerConfig {
     const char* ssid;
     const char* password;
-    int port;
+    Control *control;
 };
 
 class ESP32Server {
@@ -19,12 +23,12 @@ class ESP32Server {
     void handle_client();
 
    private:
-    const char* m_ssid;
-    const char* m_password;
-    int m_port;
     WebServer m_server;
 
+    Control *m_control;
+
     void handle_root();
+    void handle_data();
     void handle_not_found();
 };
 

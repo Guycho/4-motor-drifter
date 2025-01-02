@@ -186,4 +186,6 @@ void Control::apply_trim(InputControllerData &input_data) {
     }
 }
 
-ControlPrintData Control::get_print_data() { return m_print_data; }
+ControlPrintData Control::get_print_data() {
+    return m_print_data;
+}

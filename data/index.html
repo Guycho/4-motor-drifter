@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ESP32 Server</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.3.0/raphael.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/justgage/1.3.5/justgage.min.js"></script>
+    <script>
+        let throttleGauge, steeringGauge;
+
+        function fetchData() {
+            fetch('/data')
+                .then(response => response.json())
+                .then(data => {
+                    throttleGauge.refresh(data.throttle);
+                    steeringGauge.refresh(data.steering);
+                    document.getElementById('arm_enabled').innerText = data.arm_enabled;
+                    document.getElementById('steering_mode').innerText = data.steering_mode;
+                    document.getElementById('drive_mode').innerText = data.drive_mode;
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        window.onload = function() {
+            throttleGauge = new JustGage({
+                id: 'throttle-gauge',
+                value: 0,
+                min: 0,
+                max: 100,
+                title: 'Throttle'
+            });
+
+            steeringGauge = new JustGage({
+                id: 'steering-gauge',
+                value: 0,
+                min: -100,
+                max: 100,
+                title: 'Steering'
+            });
+
+            setInterval(fetchData, 100); // Fetch data every 100 milliseconds (10 Hz)
+        };
+    </script>
+</head>
+<body>
+    <h1>ESP32 Server</h1>
+    <div id="throttle-gauge" style="width:200px; height:160px;"></div>
+    <div id="steering-gauge" style="width:200px; height:160px;"></div>
+    <p>Arm enabled: <span id="arm_enabled">false</span></p>
+    <p>Steering mode: <span id="steering_mode">0</span></p>
+    <p>Drive mode: <span id="drive_mode">0</span></p>
+</body>
+</html>

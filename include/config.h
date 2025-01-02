@@ -18,7 +18,6 @@ const float cs_ratio = 0.7;
 namespace Server {
 extern const char *ssid;
 extern const char *password;
-extern const int port;
 }  // namespace Server
 namespace Motor {
 namespace Wheel {
