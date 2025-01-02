@@ -33,7 +33,6 @@
             padding-right: 10px;
             color: white;
         }
-        
 
         .bar-label {
             margin-top: 5px;
@@ -138,6 +137,10 @@
             left: 0;
         }
 
+        .small-header {
+            font-size: 1.2em; /* Adjust the size as needed */
+        }
+
     </style>
     <script>
         let throttleGauge, steeringGauge;
@@ -148,7 +151,6 @@
                 .then(data => {
                     throttleGauge.refresh(data.throttle);
                     steeringGauge.refresh(data.steering);
-                    document.getElementById('arm_enabled').innerText = data.arm_enabled;
                     document.getElementById('steering_mode').innerText = data.steering_mode;
                     document.getElementById('drive_mode').innerText = data.drive_mode;
 
@@ -176,7 +178,7 @@
                     document.getElementById('motor4-rpm-bar').style.width = (data.motor4_rpm / 100) + '%';
                     document.getElementById('motor4-rpm-bar').innerText = data.motor4_rpm + ' RPM';
 
-                    // Update G-force dot
+                    // Update G-force dot and values
                     const gForceDot = document.getElementById('g-force-dot');
                     const gForceContainer = document.getElementById('g-force-container');
                     const maxGForce = 2; // Example max G-force value
@@ -184,11 +186,11 @@
                     const y = (data.g_force_y / maxGForce) * (gForceContainer.clientHeight / 2) + (gForceContainer.clientHeight / 2);
                     gForceDot.style.left = `${x}px`;
                     gForceDot.style.top = `${y}px`;
-                  
+
                     document.getElementById('g-force-x-value').innerText = data.g_force_x.toFixed(2);
                     document.getElementById('g-force-y-value').innerText = data.g_force_y.toFixed(2);
 
-                                        // Update toggle switch
+                    // Update toggle switch
                     const toggleSwitch = document.getElementById('toggle-switch');
                     if (data.arm_enabled) {
                         toggleSwitch.classList.add('enabled');
@@ -197,7 +199,6 @@
                         toggleSwitch.classList.add('disabled');
                         toggleSwitch.classList.remove('enabled');
                     }
-
                 })
                 .catch(error => console.error('Error fetching data:', error));
         }
@@ -206,7 +207,7 @@
             throttleGauge = new JustGage({
                 id: 'throttle-gauge',
                 value: 0,
-                min: -100,
+                min: 0,
                 max: 100,
                 title: 'Throttle'
             });
