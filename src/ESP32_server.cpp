@@ -41,7 +41,7 @@ void ESP32Server::handle_root() {
     String html = file.readString();
     file.close();
 
-    m_server.send(200, "text/html", html);
+    m_server.send(1000, "text/html", html);
 }
 
 void ESP32Server::handle_file(const char* path) {
@@ -83,7 +83,7 @@ void ESP32Server::handle_data() {
     String json;
     serializeJson(doc, json);
 
-    m_server.send(200, "application/json", json);
+    m_server.send(1000, "application/json", json);
 }
 
 void ESP32Server::handle_not_found() { m_server.send(404, "text/plain", "File Not Found"); }
