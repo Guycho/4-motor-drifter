@@ -69,8 +69,8 @@ void ESP32Server::handle_data() {
     doc["throttle"] = control_data.throttle;
     doc["steering"] = control_data.steering;
     doc["arm_enabled"] = control_data.arm_enabled;
-    doc["steering_mode"] = control_data.steering_mode;
-    doc["drive_mode"] = control_data.drive_mode;
+    doc["steering_mode"] = control_data.steering_mode == 0 ? "NORMAL" : "GYRO";
+    doc["drive_mode"] = control_data.drive_mode == 0 ? "AWD" : control_data.drive_mode == 1 ? "CS" : "RWD";
     doc["motor1_rpm"] = 5421;
     doc["motor1_throttle"] = 71;
     doc["motor2_rpm"] = 5421;

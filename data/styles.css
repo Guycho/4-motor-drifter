@@ -195,3 +195,7 @@
 .status-indicator.disarmed {
     background-color: green;
 }
+
+.status-indicator.green {
+    background-color: green;
+}

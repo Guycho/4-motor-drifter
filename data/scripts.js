@@ -7,20 +7,13 @@ function fetchData() {
             throttleGauge.refresh(data.throttle);
             steeringGauge.refresh(data.steering);
 
-            // Update steering mode switch
-            const steeringSwitch = document.getElementById('steering-switch');
-            if (data.steering_mode) {
-                steeringSwitch.classList.add('enabled');
-                steeringSwitch.classList.remove('disabled');
-            } else {
-                steeringSwitch.classList.add('disabled');
-                steeringSwitch.classList.remove('enabled');
-            }
+            // Update steering mode status indicator
+            const steeringStatus = document.getElementById('steering-status');
+            steeringStatus.innerText = data.steering_mode;
 
-            // Update drive mode switch
-            const driveSwitch = document.getElementById('drive-switch');
-            driveSwitch.classList.remove('mode-0', 'mode-1', 'mode-2');
-            driveSwitch.classList.add('mode-' + data.drive_mode);
+            // Update drive mode status indicator
+            const driveStatus = document.getElementById('drive-status');
+            driveStatus.innerText = data.drive_mode;
 
             // Update motor 1 bars
             document.getElementById('motor1-throttle-bar').style.height = data.motor1_throttle + '%';
