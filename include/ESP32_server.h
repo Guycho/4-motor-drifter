@@ -7,13 +7,11 @@
 #include <WebServer.h>
 #include <WiFi.h>
 #include "control.h"
-#include "wheels_mixer.h"
 
 struct ESP32ServerConfig {
     const char* ssid;
     const char* password;
     Control *control;
-    WheelsMixer *wheels_mixer;
 };
 
 class ESP32Server {
@@ -28,7 +26,6 @@ class ESP32Server {
     WebServer m_server;
 
     Control *m_control;
-    WheelsMixer *m_wheels_mixer;
 
     void handle_root();
     void handle_data();
