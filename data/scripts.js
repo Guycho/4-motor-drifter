@@ -71,7 +71,7 @@ window.onload = function() {
     throttleGauge = new JustGage({
         id: 'throttle-gauge',
         value: 0,
-        min: 0,
+        min: -100,
         max: 100,
         title: 'Throttle'
     });
