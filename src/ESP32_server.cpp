@@ -81,6 +81,7 @@ void ESP32Server::handle_data() {
     doc["motor4_throttle"] = 71;
     doc["g_force_x"] = control_data.inertial_data.acceleration.x;
     doc["g_force_y"] = control_data.inertial_data.acceleration.y;
+    doc["rotational_rate"] = control_data.inertial_data.gyro.z;
 
     String json;
     serializeJson(doc, json);

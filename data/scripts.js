@@ -1,4 +1,4 @@
-let throttleGauge, steeringGauge;
+let throttleGauge, steeringGauge, rotationalRateGauge;
 
 function fetchData() {
     fetch('/data')
@@ -6,6 +6,7 @@ function fetchData() {
         .then(data => {
             throttleGauge.refresh(data.throttle);
             steeringGauge.refresh(data.steering);
+            rotationalRateGauge.refresh(data.rotational_rate);
 
             // Update steering mode status indicator
             const steeringStatus = document.getElementById('steering-status');
@@ -70,7 +71,7 @@ window.onload = function() {
     throttleGauge = new JustGage({
         id: 'throttle-gauge',
         value: 0,
-        min: -100,
+        min: 0,
         max: 100,
         title: 'Throttle'
     });
@@ -81,6 +82,14 @@ window.onload = function() {
         min: -100,
         max: 100,
         title: 'Steering'
+    });
+
+    rotationalRateGauge = new JustGage({
+        id: 'rotational-rate-gauge',
+        value: 0,
+        min: -360,
+        max: 360,
+        title: 'Rotational Rate'
     });
 
     setInterval(fetchData, 100); // Fetch data every 100 milliseconds (10 Hz)
