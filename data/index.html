@@ -15,12 +15,18 @@
         <div id="throttle-gauge" style="width:200px; height:160px;"></div>
         <div id="steering-gauge" style="width:200px; height:160px;"></div>
     </div>
-    <h2 class="small-header">Arm enabled</h2>
-    <div class="toggle-switch" id="toggle-switch">
+    <h2 class="small-header">Arm Status</h2>
+    <div id="arm-status" class="status-indicator">Disarmed</div>
+
+    <h2 class="small-header">Steering mode</h2>
+    <div class="toggle-switch" id="steering-switch">
         <div class="toggle-knob"></div>
     </div>
-    <p>Steering mode: <span id="steering_mode">0</span></p>
-    <p>Drive mode: <span id="drive_mode">0</span></p>
+
+    <h2 class="small-header">Drive mode</h2>
+    <div class="three-pos-switch" id="drive-switch">
+        <div class="toggle-knob"></div>
+    </div>
 
     <div class="flex-container">
         <div class="motor-container">

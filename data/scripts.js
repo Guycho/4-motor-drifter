@@ -6,8 +6,21 @@ function fetchData() {
         .then(data => {
             throttleGauge.refresh(data.throttle);
             steeringGauge.refresh(data.steering);
-            document.getElementById('steering_mode').innerText = data.steering_mode;
-            document.getElementById('drive_mode').innerText = data.drive_mode;
+
+            // Update steering mode switch
+            const steeringSwitch = document.getElementById('steering-switch');
+            if (data.steering_mode) {
+                steeringSwitch.classList.add('enabled');
+                steeringSwitch.classList.remove('disabled');
+            } else {
+                steeringSwitch.classList.add('disabled');
+                steeringSwitch.classList.remove('enabled');
+            }
+
+            // Update drive mode switch
+            const driveSwitch = document.getElementById('drive-switch');
+            driveSwitch.classList.remove('mode-0', 'mode-1', 'mode-2');
+            driveSwitch.classList.add('mode-' + data.drive_mode);
 
             // Update motor 1 bars
             document.getElementById('motor1-throttle-bar').style.height = data.motor1_throttle + '%';
@@ -45,14 +58,16 @@ function fetchData() {
             document.getElementById('g-force-x-value').innerText = data.g_force_x.toFixed(2);
             document.getElementById('g-force-y-value').innerText = data.g_force_y.toFixed(2);
 
-            // Update toggle switch
-            const toggleSwitch = document.getElementById('toggle-switch');
+            // Update arm status indicator
+            const armStatus = document.getElementById('arm-status');
             if (data.arm_enabled) {
-                toggleSwitch.classList.add('enabled');
-                toggleSwitch.classList.remove('disabled');
+                armStatus.classList.add('armed');
+                armStatus.classList.remove('disarmed');
+                armStatus.innerText = 'Armed';
             } else {
-                toggleSwitch.classList.add('disabled');
-                toggleSwitch.classList.remove('enabled');
+                armStatus.classList.add('disarmed');
+                armStatus.classList.remove('armed');
+                armStatus.innerText = 'Disarmed';
             }
         })
         .catch(error => console.error('Error fetching data:', error));

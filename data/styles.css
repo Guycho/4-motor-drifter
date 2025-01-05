@@ -53,8 +53,8 @@
 }
 
 .g-force-dot {
-    width: 10px;
-    height: 10px;
+    width: 15px;
+    height: 15px;
     background-color: blue;
     border-radius: 50%;
     position: absolute;
@@ -120,6 +120,7 @@
     border-radius: 15px;
     cursor: pointer;
     transition: background-color 0.3s;
+    margin: 5px;
 }
 
 .toggle-switch .toggle-knob {
@@ -145,4 +146,52 @@
 
 .small-header {
     font-size: 1.2em; /* Adjust the size as needed */
+}
+
+.three-pos-switch {
+    position: relative;
+    width: 180px;
+    height: 30px;
+    background-color: #ccc;
+    border-radius: 15px;
+    margin: 10px 0;
+}
+
+.three-pos-switch .toggle-knob {
+    position: absolute;
+    width: 60px;
+    height: 30px;
+    background-color: white;
+    border-radius: 15px;
+    transition: left 0.3s;
+}
+
+.three-pos-switch.mode-0 .toggle-knob {
+    left: 0;
+}
+
+.three-pos-switch.mode-1 .toggle-knob {
+    left: 60px;
+}
+
+.three-pos-switch.mode-2 .toggle-knob {
+    left: 120px;
+}
+
+.status-indicator {
+    width: 100px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    border-radius: 15px;
+    color: white;
+    transition: background-color 0.3s;
+}
+
+.status-indicator.armed {
+    background-color: red;
+}
+
+.status-indicator.disarmed {
+    background-color: green;
 }
