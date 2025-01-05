@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Drifter telemetry</title>
     <link rel="stylesheet" type="text/css" href="styles.css">
@@ -7,6 +8,7 @@
     <script src="/justgage.min.js"></script>
     <script src="scripts.js" defer></script>
 </head>
+
 <body>
     <h1>Drifter telemetry</h1>
     <div class="flex-container">
@@ -20,36 +22,59 @@
     <p>Steering mode: <span id="steering_mode">0</span></p>
     <p>Drive mode: <span id="drive_mode">0</span></p>
 
-    <h2>Motor 1</h2>
-    <div class="bar-container">
-        <div id="motor1-throttle-bar" class="bar-green"></div>
-    </div>
-    <div class="bar-container">
-        <div id="motor1-rpm-bar" class="bar-red"></div>
-    </div>
-
-    <h2>Motor 2</h2>
-    <div class="bar-container">
-        <div id="motor2-throttle-bar" class="bar-green"></div>
-    </div>
-    <div class="bar-container">
-        <div id="motor2-rpm-bar" class="bar-red"></div>
-    </div>
-
-    <h2>Motor 3</h2>
-    <div class="bar-container">
-        <div id="motor3-throttle-bar" class="bar-green"></div>
-    </div>
-    <div class="bar-container">
-        <div id="motor3-rpm-bar" class="bar-red"></div>
-    </div>
-
-    <h2>Motor 4</h2>
-    <div class="bar-container">
-        <div id="motor4-throttle-bar" class="bar-green"></div>
-    </div>
-    <div class="bar-container">
-        <div id="motor4-rpm-bar" class="bar-red"></div>
+    <div class="flex-container">
+        <div class="motor-container">
+            <h3>Motor 1</h3>
+            <div class="bar-group">
+                <div class="bar-container">
+                    <div id="motor1-throttle-bar" class="bar-green"></div>
+                    <div class="bar-label">Throttle</div>
+                </div>
+                <div class="bar-container">
+                    <div id="motor1-rpm-bar" class="bar-red"></div>
+                    <div class="bar-label">RPM</div>
+                </div>
+            </div>
+        </div>
+        <div class="motor-container">
+            <h3>Motor 2</h3>
+            <div class="bar-group">
+                <div class="bar-container">
+                    <div id="motor2-throttle-bar" class="bar-green"></div>
+                    <div class="bar-label">Throttle</div>
+                </div>
+                <div class="bar-container">
+                    <div id="motor2-rpm-bar" class="bar-red"></div>
+                    <div class="bar-label">RPM</div>
+                </div>
+            </div>
+        </div>
+        <div class="motor-container">
+            <h3>Motor 3</h3>
+            <div class="bar-group">
+                <div class="bar-container">
+                    <div id="motor3-throttle-bar" class="bar-green"></div>
+                    <div class="bar-label">Throttle</div>
+                </div>
+                <div class="bar-container">
+                    <div id="motor3-rpm-bar" class="bar-red"></div>
+                    <div class="bar-label">RPM</div>
+                </div>
+            </div>
+        </div>
+        <div class="motor-container">
+            <h3>Motor 4</h3>
+            <div class="bar-group">
+                <div class="bar-container">
+                    <div id="motor4-throttle-bar" class="bar-green"></div>
+                    <div class="bar-label">Throttle</div>
+                </div>
+                <div class="bar-container">
+                    <div id="motor4-rpm-bar" class="bar-red"></div>
+                    <div class="bar-label">RPM</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <h2>G-Force</h2>
@@ -64,4 +89,5 @@
     </div>
 
 </body>
+
 </html>

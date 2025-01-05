@@ -1,33 +1,46 @@
 .flex-container {
     display: flex;
     justify-content: space-around;
+    align-items: flex-end; /* Align items to the bottom */
+}
+
+.motor-container {
+    display: flex;
+    flex-direction: column;
     align-items: center;
+    margin: 0 10px;
+}
+
+.bar-group {
+    display: flex;
+    justify-content: space-between;
 }
 
 .bar-container {
-    width: 100%;
+    display: flex;
+    flex-direction: column-reverse;
+    width: 50px;
+    height: 200px;
     background-color: white;
+    margin: 0;
+    align-items: center; /* Center the labels */
+}
+
+.bar-green, .bar-red {
+    width: 100%;
+    transition: height 0.3s;
 }
 
 .bar-green {
-    width: 0%;
-    height: 15px;
     background-color: green;
-    text-align: right;
-    padding-right: 10px;
-    color: white;
 }
 
 .bar-red {
-    width: 0%;
-    height: 15px;
     background-color: red;
-    text-align: right;
-    padding-right: 10px;
-    color: white;
 }
 
 .bar-label {
+    text-align: center;
     margin-top: 5px;
 }
 
@@ -103,7 +116,7 @@
     position: relative;
     width: 60px;
     height: 30px;
-    background-color: green;
+    background-color: red;
     border-radius: 15px;
     cursor: pointer;
     transition: background-color 0.3s;
@@ -119,7 +132,7 @@
 }
 
 .toggle-switch.enabled {
-    background-color: red;
+    background-color: green;
 }
 
 .toggle-switch.enabled .toggle-knob {

@@ -10,27 +10,27 @@ function fetchData() {
             document.getElementById('drive_mode').innerText = data.drive_mode;
 
             // Update motor 1 bars
-            document.getElementById('motor1-throttle-bar').style.width = data.motor1_throttle + '%';
+            document.getElementById('motor1-throttle-bar').style.height = data.motor1_throttle + '%';
             document.getElementById('motor1-throttle-bar').innerText = data.motor1_throttle + '%';
-            document.getElementById('motor1-rpm-bar').style.width = (data.motor1_rpm / 100) + '%';
+            document.getElementById('motor1-rpm-bar').style.height = (data.motor1_rpm / 100) + '%';
             document.getElementById('motor1-rpm-bar').innerText = data.motor1_rpm + ' RPM';
 
             // Update motor 2 bars
-            document.getElementById('motor2-throttle-bar').style.width = data.motor2_throttle + '%';
+            document.getElementById('motor2-throttle-bar').style.height = data.motor2_throttle + '%';
             document.getElementById('motor2-throttle-bar').innerText = data.motor2_throttle + '%';
-            document.getElementById('motor2-rpm-bar').style.width = (data.motor2_rpm / 100) + '%';
+            document.getElementById('motor2-rpm-bar').style.height = (data.motor2_rpm / 100) + '%';
             document.getElementById('motor2-rpm-bar').innerText = data.motor2_rpm + ' RPM';
 
             // Update motor 3 bars
-            document.getElementById('motor3-throttle-bar').style.width = data.motor3_throttle + '%';
+            document.getElementById('motor3-throttle-bar').style.height = data.motor3_throttle + '%';
             document.getElementById('motor3-throttle-bar').innerText = data.motor3_throttle + '%';
-            document.getElementById('motor3-rpm-bar').style.width = (data.motor3_rpm / 100) + '%';
+            document.getElementById('motor3-rpm-bar').style.height = (data.motor3_rpm / 100) + '%';
             document.getElementById('motor3-rpm-bar').innerText = data.motor3_rpm + ' RPM';
 
             // Update motor 4 bars
-            document.getElementById('motor4-throttle-bar').style.width = data.motor4_throttle + '%';
+            document.getElementById('motor4-throttle-bar').style.height = data.motor4_throttle + '%';
             document.getElementById('motor4-throttle-bar').innerText = data.motor4_throttle + '%';
-            document.getElementById('motor4-rpm-bar').style.width = (data.motor4_rpm / 100) + '%';
+            document.getElementById('motor4-rpm-bar').style.height = (data.motor4_rpm / 100) + '%';
             document.getElementById('motor4-rpm-bar').innerText = data.motor4_rpm + ' RPM';
 
             // Update G-force dot and values
