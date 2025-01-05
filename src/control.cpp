@@ -20,7 +20,7 @@ void Control::init(const ControlConfig &config) {
 
 void Control::run() {
     m_mav_bridge.run();
-    m_inertial_data = m_mav_bridge.get_inertial_data();
+    MavlinkData m_mavlink_data = m_mav_bridge.get_mavlink_data();
     InputControllerData input_data = get_input_data();
     if (input_data.new_data) {
         apply_trim(input_data);
@@ -54,7 +54,7 @@ void Control::run() {
             case GYRO:
                 desired_omega = m_steering;
                 current_omega = Utils::Calcs::constrain_float(
-                  Utils::Calcs::map_float(m_inertial_data.gyro.z, -Config::max_omega,
+                  Utils::Calcs::map_float(m_mavlink_data.inertial_data.gyro.z, -Config::max_omega,
                     Config::max_omega, Config::min_percentage, Config::max_percentage),
                   Config::min_percentage, Config::max_percentage);
                 pid_output = m_pid.compute(desired_omega, current_omega);
@@ -121,7 +121,7 @@ void Control::run() {
     m_print_data.drive_mode = m_drive_mode;
     m_print_data.wheels_mixer_data = wheels_mixer_data;
     m_print_data.steering_mixer_data = steering_mixer_data;
-    m_print_data.inertial_data = m_inertial_data;
+    m_print_data.mavlink_data = m_mavlink_data;
 }
 
 void Control::apply_multiplier(SteeringMixerData &steering_mixer_data) {

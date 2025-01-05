@@ -82,6 +82,7 @@ void setup() {
     server_config.ssid = Config::Server::ssid;
     server_config.password = Config::Server::password;
     server_config.control = &control;
+    server_config.wheels_mixer = &wheels_mixer;
     server.init(server_config);
 }
 

@@ -19,31 +19,31 @@ function fetchData() {
             // Update motor 1 bars
             document.getElementById('motor1-throttle-bar').style.height = data.motor1_throttle + '%';
             document.getElementById('motor1-throttle-bar').innerText = data.motor1_throttle + '%';
-            document.getElementById('motor1-rpm-bar').style.height = (data.motor1_rpm / 100) + '%';
+            document.getElementById('motor1-rpm-bar').style.height = (data.motor1_rpm / data.max_rpm * 100) + '%';
             document.getElementById('motor1-rpm-bar').innerText = data.motor1_rpm + ' RPM';
 
             // Update motor 2 bars
             document.getElementById('motor2-throttle-bar').style.height = data.motor2_throttle + '%';
             document.getElementById('motor2-throttle-bar').innerText = data.motor2_throttle + '%';
-            document.getElementById('motor2-rpm-bar').style.height = (data.motor2_rpm / 100) + '%';
+            document.getElementById('motor2-rpm-bar').style.height = (data.motor2_rpm / data.max_rpm * 100) + '%';
             document.getElementById('motor2-rpm-bar').innerText = data.motor2_rpm + ' RPM';
 
             // Update motor 3 bars
             document.getElementById('motor3-throttle-bar').style.height = data.motor3_throttle + '%';
             document.getElementById('motor3-throttle-bar').innerText = data.motor3_throttle + '%';
-            document.getElementById('motor3-rpm-bar').style.height = (data.motor3_rpm / 100) + '%';
+            document.getElementById('motor3-rpm-bar').style.height = (data.motor3_rpm / data.max_rpm * 100) + '%';
             document.getElementById('motor3-rpm-bar').innerText = data.motor3_rpm + ' RPM';
 
             // Update motor 4 bars
             document.getElementById('motor4-throttle-bar').style.height = data.motor4_throttle + '%';
             document.getElementById('motor4-throttle-bar').innerText = data.motor4_throttle + '%';
-            document.getElementById('motor4-rpm-bar').style.height = (data.motor4_rpm / 100) + '%';
+            document.getElementById('motor4-rpm-bar').style.height = (data.motor4_rpm / data.max_rpm * 100) + '%';
             document.getElementById('motor4-rpm-bar').innerText = data.motor4_rpm + ' RPM';
 
             // Update G-force dot and values
             const gForceDot = document.getElementById('g-force-dot');
             const gForceContainer = document.getElementById('g-force-container');
-            const maxGForce = 10; // Example max G-force value
+            const maxGForce = data.max_g_force; // Example max G-force value
             const x = (data.g_force_x / maxGForce) * (gForceContainer.clientWidth / 2) + (gForceContainer.clientWidth / 2);
             const y = (data.g_force_y / maxGForce) * (gForceContainer.clientHeight / 2) + (gForceContainer.clientHeight / 2);
             gForceDot.style.left = `${x}px`;

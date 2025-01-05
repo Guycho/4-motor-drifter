@@ -26,10 +26,12 @@ class WheelsMixer {
 
     void init(const WheelsMixerConfig &config);
     void run(WheelsMixerData &wheels_mixer_data);
+    WheelsMixerData get_wheels_data();
     uint8_t get_num_of_drive_modes();
 
    private:
     MavBridge m_mav_bridge;
+    WheelsMixerData m_wheels_mixer_data;
     uint8_t m_pin[Config::num_wheels];
     uint16_t m_min_pulse[Config::num_wheels];
     uint16_t m_max_pulse[Config::num_wheels];

@@ -25,7 +25,6 @@ struct InertialData {
     Vector3D gyro;
     Vector3D orientation;
     Vector3D acceleration;
-    bool is_alive = false;
 };
 
 struct MavMsg {
@@ -41,6 +40,19 @@ struct MotorSpeed {
     uint16_t motor_value;
 };
 
+struct FourMotorSpeed {
+    uint16_t motor1_rpm;
+    uint16_t motor2_rpm;
+    uint16_t motor3_rpm;
+    uint16_t motor4_rpm;
+};
+
+struct MavlinkData {
+    InertialData inertial_data;
+    FourMotorSpeed four_motor_speed;
+    bool is_alive = false;
+};
+
 class MavBridge {
    public:
     MavBridge();
@@ -49,7 +61,7 @@ class MavBridge {
     void init(const MavBridgeConfig &mav__msg);
     void run();
     void set_motor_speed(MotorSpeed motor_speed);
-    InertialData get_inertial_data();
+    MavlinkData get_mavlink_data();
 
    private:
     void set_messages_rates();
@@ -64,7 +76,7 @@ class MavBridge {
     uint16_t m_is_alive_timeout;
 
     Chrono m_is_alive_timer;
-    InertialData m_inertial_data;
+    MavlinkData m_mavlink_data;
 };
 
 #endif  // MAV_BRIDGE_H

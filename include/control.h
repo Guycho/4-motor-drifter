@@ -27,7 +27,7 @@ struct ControlPrintData {
     uint8_t drive_mode;
     WheelsMixerData wheels_mixer_data;
     SteeringMixerData steering_mixer_data;
-    InertialData inertial_data;
+    MavlinkData mavlink_data;
 };
 
 class Control {
@@ -53,7 +53,6 @@ class Control {
     PID m_pid;
     NVM m_nvm;
     ControlPrintData m_print_data;
-    InertialData m_inertial_data;
     NVMData m_nvm_data;    
 
     uint8_t NUM_STEERING_MODES;

@@ -9,10 +9,12 @@ void WheelsMixer::init(const WheelsMixerConfig &config) {
         m_pin[i] = config.pin[i];
         m_min_pulse[i] = config.min_pulse[i];
         m_max_pulse[i] = config.max_pulse[i];
+        m_wheels_mixer_data.motor_speed[i] = 0;
     }
 }
 
 void WheelsMixer::run(WheelsMixerData &wheels_mixer_data) {
+    m_wheels_mixer_data = wheels_mixer_data; 
     for (int i = 0; i < Config::num_wheels; i++) {
         MotorSpeed motor_speed;
         motor_speed.motor_pin = m_pin[i];
@@ -25,3 +27,5 @@ void WheelsMixer::run(WheelsMixerData &wheels_mixer_data) {
 }
 
 uint8_t WheelsMixer::get_num_of_drive_modes() { return NUM_DRIVE_MODES; }
+
+WheelsMixerData WheelsMixer::get_wheels_data() { return m_wheels_mixer_data; }

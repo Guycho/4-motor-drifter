@@ -1,11 +1,12 @@
 #include "ESP32_server.h"
 
-ESP32Server::ESP32Server() : m_control(nullptr) {}
+ESP32Server::ESP32Server() : m_control(nullptr), m_wheels_mixer(nullptr) {}
 
 ESP32Server::~ESP32Server() {}
 
 void ESP32Server::init(const ESP32ServerConfig& config) {
     m_control = config.control;
+    m_wheels_mixer = config.wheels_mixer;
 
     WiFi.softAP(config.ssid, config.password);
     IPAddress IP = WiFi.softAPIP();
@@ -65,23 +66,35 @@ void ESP32Server::handle_file(const char* path) {
 
 void ESP32Server::handle_data() {
     ControlPrintData control_data = m_control->get_print_data();
+    WheelsMixerData wheels_data = m_wheels_mixer->get_wheels_data();
     StaticJsonDocument<1024> doc;
+    m_max_g_force =
+      max(m_max_g_force, max(abs(control_data.mavlink_data.inertial_data.acceleration.x),
+                           abs(control_data.mavlink_data.inertial_data.acceleration.y)));
+    m_max_rpm = max(max(max(max(m_max_rpm, control_data.mavlink_data.four_motor_speed.motor1_rpm),
+                                   control_data.mavlink_data.four_motor_speed.motor2_rpm),
+                                   control_data.mavlink_data.four_motor_speed.motor3_rpm),
+                                   control_data.mavlink_data.four_motor_speed.motor4_rpm); 
     doc["throttle"] = control_data.throttle;
     doc["steering"] = control_data.steering;
     doc["arm_enabled"] = control_data.arm_enabled;
     doc["steering_mode"] = control_data.steering_mode == 0 ? "Normal" : "Gyro";
-    doc["drive_mode"] = control_data.drive_mode == 0 ? "AWD" : control_data.drive_mode == 1 ? "CS" : "RWD";
-    doc["motor1_rpm"] = 5421;
-    doc["motor1_throttle"] = 71;
-    doc["motor2_rpm"] = 5421;
-    doc["motor2_throttle"] = 71;
-    doc["motor3_rpm"] = 5421;
-    doc["motor3_throttle"] = 71;
-    doc["motor4_rpm"] = 5421;
-    doc["motor4_throttle"] = 71;
-    doc["g_force_x"] = control_data.inertial_data.acceleration.x;
-    doc["g_force_y"] = control_data.inertial_data.acceleration.y;
-    doc["rotational_rate"] = control_data.inertial_data.gyro.z;
+    doc["drive_mode"] = control_data.drive_mode == 0   ? "AWD"
+                        : control_data.drive_mode == 1 ? "CS"
+                                                       : "RWD";
+    doc["motor1_rpm"] = control_data.mavlink_data.four_motor_speed.motor1_rpm;
+    doc["motor1_throttle"] = abs(wheels_data.motor_speed[0]);
+    doc["motor2_rpm"] = control_data.mavlink_data.four_motor_speed.motor2_rpm;
+    doc["motor2_throttle"] = abs(wheels_data.motor_speed[1]);
+    doc["motor3_rpm"] = control_data.mavlink_data.four_motor_speed.motor3_rpm;
+    doc["motor3_throttle"] = abs(wheels_data.motor_speed[2]);
+    doc["motor4_rpm"] = control_data.mavlink_data.four_motor_speed.motor4_rpm;
+    doc["motor4_throttle"] = abs(wheels_data.motor_speed[3]);
+    doc["g_force_x"] = control_data.mavlink_data.inertial_data.acceleration.x;
+    doc["g_force_y"] = control_data.mavlink_data.inertial_data.acceleration.y;
+    doc["max_g_force"] = m_max_g_force;
+    doc["rotational_rate"] = control_data.mavlink_data.inertial_data.gyro.z;
+    doc["max_rpm"] = 5421;  // Add max RPM value
 
     String json;
     serializeJson(doc, json);
