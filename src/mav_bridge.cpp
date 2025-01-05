@@ -37,6 +37,13 @@ void MavBridge::run() {
                 m_inertial_data.gyro.y = Utils::Calcs::rad_to_deg(att.pitchspeed);
                 m_inertial_data.gyro.z = Utils::Calcs::rad_to_deg(att.yawspeed);
             }
+            if (msg.msgid == MAVLINK_MSG_ID_SCALED_IMU) {
+                mavlink_scaled_imu_t imu;
+                mavlink_msg_scaled_imu_decode(&msg, &imu);
+                m_inertial_data.acceleration.x = imu.xacc / 1e2;
+                m_inertial_data.acceleration.y = imu.yacc / 1e2;
+                m_inertial_data.acceleration.z = imu.zacc / 1e2;
+            }
             if (msg.msgid == MAVLINK_MSG_ID_HEARTBEAT) {
                 m_is_alive_timer.restart();
             }
@@ -57,6 +64,7 @@ void MavBridge::set_motor_speed(MotorSpeed motor_speed) {
 void MavBridge::set_messages_rates() {
     set_message_rate(MAVLINK_MSG_ID_HEARTBEAT, m_message_rate);
     set_message_rate(MAVLINK_MSG_ID_ATTITUDE, m_message_rate);
+    set_message_rate(MAVLINK_MSG_ID_SCALED_IMU, m_message_rate);
 }
 
 void MavBridge::set_message_rate(uint32_t msg_id, uint16_t message_rate_hz) {

@@ -22,6 +22,8 @@ void ESP32Server::init(const ESP32ServerConfig& config) {
       std::bind(&ESP32Server::handle_file, this, "/raphael.min.js"));
     m_server.on("/justgage.min.js", HTTP_GET,
       std::bind(&ESP32Server::handle_file, this, "/justgage.min.js"));
+    m_server.on("/styles.css", HTTP_GET, std::bind(&ESP32Server::handle_file, this, "/styles.css"));
+    m_server.on("/scripts.js", HTTP_GET, std::bind(&ESP32Server::handle_file, this, "/scripts.js"));
     m_server.on("/data", HTTP_GET, std::bind(&ESP32Server::handle_data, this));
     m_server.onNotFound(std::bind(&ESP32Server::handle_not_found, this));
     m_server.begin();
@@ -77,8 +79,8 @@ void ESP32Server::handle_data() {
     doc["motor3_throttle"] = 71;
     doc["motor4_rpm"] = 5421;
     doc["motor4_throttle"] = 71;
-    doc["g_force_x"] = 0.5;
-    doc["g_force_y"] = -0.25;
+    doc["g_force_x"] = control_data.inertial_data.acceleration.x;
+    doc["g_force_y"] = control_data.inertial_data.acceleration.y;
 
     String json;
     serializeJson(doc, json);

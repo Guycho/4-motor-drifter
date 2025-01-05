@@ -24,6 +24,7 @@ struct Vector3D {
 struct InertialData {
     Vector3D gyro;
     Vector3D orientation;
+    Vector3D acceleration;
     bool is_alive = false;
 };
 

@@ -1,0 +1,135 @@
+.flex-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.bar-container {
+    width: 100%;
+    background-color: white;
+}
+
+.bar-green {
+    width: 0%;
+    height: 15px;
+    background-color: green;
+    text-align: right;
+    padding-right: 10px;
+    color: white;
+}
+
+.bar-red {
+    width: 0%;
+    height: 15px;
+    background-color: red;
+    text-align: right;
+    padding-right: 10px;
+    color: white;
+}
+
+.bar-label {
+    margin-top: 5px;
+}
+
+.g-force-container {
+    width: 200px;
+    height: 200px;
+    border: 1px solid black;
+    position: relative;
+    margin-top: 20px;
+}
+
+.g-force-dot {
+    width: 10px;
+    height: 10px;
+    background-color: blue;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.g-force-cross {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%);
+}
+
+.g-force-cross .horizontal,
+.g-force-cross .vertical {
+    position: absolute;
+    background-color: black;
+}
+
+.g-force-cross .horizontal {
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+}
+
+.g-force-cross .vertical {
+    top: 0;
+    left: 50%;
+    width: 1px;
+    height: 100%;
+}
+
+.g-force-value {
+    position: absolute;
+    background-color: white;
+    padding: 2px 5px;
+    border: 1px solid black;
+    border-radius: 3px;
+}
+
+.g-force-value.x {
+    top: 100%;
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+
+.g-force-value.y {
+    top: 50%;
+    left: 100%;
+    transform: translate(0, -50%);
+}
+
+.toggle-switch {
+    position: relative;
+    width: 60px;
+    height: 30px;
+    background-color: green;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.toggle-switch .toggle-knob {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background-color: white;
+    border-radius: 50%;
+    transition: left 0.3s;
+}
+
+.toggle-switch.enabled {
+    background-color: red;
+}
+
+.toggle-switch.enabled .toggle-knob {
+    left: 30px;
+}
+
+.toggle-switch.disabled .toggle-knob {
+    left: 0;
+}
+
+.small-header {
+    font-size: 1.2em; /* Adjust the size as needed */
+}
