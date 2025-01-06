@@ -59,6 +59,9 @@ void ESP32Server::update_data() {
     m_json_data["motor3_throttle"] = abs(control_data.wheels_mixer_data.motor_speed[2]);
     m_json_data["motor4_rpm"] = control_data.mavlink_data.four_motor_speed.motor4_rpm;
     m_json_data["motor4_throttle"] = abs(control_data.wheels_mixer_data.motor_speed[3]);
+    m_json_data["battery_voltage"] = control_data.mavlink_data.battery_voltage;
+    m_json_data["right_steering"] = control_data.steering_mixer_data.motor_speed[0];
+    m_json_data["left_steering"] = control_data.steering_mixer_data.motor_speed[1];
     m_json_data["g_force_x"] = control_data.mavlink_data.inertial_data.acceleration.x;
     m_json_data["g_force_y"] = control_data.mavlink_data.inertial_data.acceleration.y;
     m_json_data["max_g_force"] = m_max_g_force;
