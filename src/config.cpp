@@ -4,6 +4,7 @@ namespace Config {
 namespace Server {
 const char *ssid = "drifter";
 const char *password = "drifter123";
+const uint16_t update_delay_ms = 100;
 }  // namespace Server
 namespace Motor {
 namespace Wheel {

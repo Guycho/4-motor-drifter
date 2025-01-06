@@ -18,6 +18,7 @@ const float cs_ratio = 0.7;
 namespace Server {
 extern const char *ssid;
 extern const char *password;
+extern const uint16_t update_delay_ms;
 }  // namespace Server
 namespace Motor {
 namespace Wheel {
