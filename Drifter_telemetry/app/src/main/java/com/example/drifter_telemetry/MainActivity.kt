@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import okhttp3.*
 import org.json.JSONObject
@@ -12,6 +13,9 @@ import java.io.IOException
 class MainActivity : AppCompatActivity() {
 
     private lateinit var gForceView: GForceView
+    private lateinit var leftWheelLine: View
+    private lateinit var rightWheelLine: View
+    private lateinit var rotationalRateGauge: RotationalRateGaugeView
     private val client = OkHttpClient()
     private val handler = Handler(Looper.getMainLooper())
     private val fetchInterval: Long = 100 // Fetch data every 100 milliseconds
@@ -21,6 +25,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         gForceView = findViewById(R.id.gForceView)
+        leftWheelLine = findViewById(R.id.leftWheelLine)
+        rightWheelLine = findViewById(R.id.rightWheelLine)
+        rotationalRateGauge = findViewById(R.id.rotationalRateGauge)
 
         // Start fetching data continuously
         startFetchingData()
@@ -70,8 +77,14 @@ class MainActivity : AppCompatActivity() {
 
             val gForceX = jsonObject.getDouble("g_force_x").toFloat()
             val gForceY = jsonObject.getDouble("g_force_y").toFloat()
+            val leftSteeringAngle = jsonObject.getDouble("left_steering").toFloat()
+            val rightSteeringAngle = jsonObject.getDouble("right_steering").toFloat()
+            val rotationalRate = jsonObject.getDouble("rotational_rate").toFloat()
 
             gForceView.updateGForce(gForceX, gForceY)
+            leftWheelLine.rotation = leftSteeringAngle
+            rightWheelLine.rotation = rightSteeringAngle
+            rotationalRateGauge.updateRotationalRate(rotationalRate)
         } catch (e: Exception) {
             e.printStackTrace()
             Log.e("MainActivity", "Failed to parse JSON data: ${e.message}")

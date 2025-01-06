@@ -16,4 +16,30 @@
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
         android:translationY="50dp" />
+
+    <View
+        android:id="@+id/leftWheelLine"
+        android:layout_width="10dp"
+        android:layout_height="75dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="100dp"
+        android:background="@android:color/black" />
+
+    <View
+        android:id="@+id/rightWheelLine"
+        android:layout_width="10dp"
+        android:layout_height="75dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="60dp"
+        android:layout_marginTop="100dp"
+        android:background="@android:color/black" />
+
+    <com.example.drifter_telemetry.RotationalRateGaugeView
+        android:id="@+id/rotationalRateGauge"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="235dp"
+        android:background="@android:color/transparent" />
 </RelativeLayout>

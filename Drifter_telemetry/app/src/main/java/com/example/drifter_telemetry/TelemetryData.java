@@ -15,6 +15,9 @@ public class TelemetryData {
     public int motor3_throttle;
     public int motor4_rpm;
     public int motor4_throttle;
+    public float battery_voltage;
+    public int right_steering;
+    public int left_steering;
     public float g_force_x;
     public float g_force_y;
     public float rotational_rate;
