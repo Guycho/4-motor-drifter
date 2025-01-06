@@ -2,8 +2,6 @@
 #define ESP32_SERVER_H
 
 #include <ArduinoJson.h>
-#include <FS.h>
-#include <SPIFFS.h>
 #include <WebServer.h>
 #include <WiFi.h>
 #include "control.h"
@@ -24,13 +22,14 @@ class ESP32Server {
 
    private:
     WebServer m_server;
+    JsonDocument json_data;
 
     Control *m_control;
 
     void handle_root();
     void handle_data();
-    void handle_file(const char* path);
     void handle_not_found();
+    void update_data();
 
     float m_max_g_force = 5.0;
     uint16_t m_max_rpm = 5000;

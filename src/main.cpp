@@ -100,6 +100,8 @@ void loop() {
         Serial.print(print_data.steering_mode);
         Serial.print(" Drive mode: ");
         Serial.print(print_data.drive_mode);
+        Serial.print(" Battery voltage: ");
+        Serial.print(print_data.mavlink_data.battery_voltage);
         Serial.print(" Wheels mixer data: ");
         for (int i = 0; i < Config::num_wheels; i++) {
             Serial.print(print_data.wheels_mixer_data.motor_speed[i]);
