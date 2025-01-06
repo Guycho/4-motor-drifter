@@ -18,6 +18,12 @@ class RotationalRateGaugeView @JvmOverloads constructor(
         style = Paint.Style.STROKE
     }
 
+    private val indicatorPaint = Paint().apply {
+        color = Color.RED
+        strokeWidth = 8f // Set the width of the line inside the gauge
+        style = Paint.Style.STROKE
+    }
+
     var rotationalRate: Float = 0f
 
     override fun onDraw(canvas: Canvas) {
@@ -34,11 +40,11 @@ class RotationalRateGaugeView @JvmOverloads constructor(
         val angle = Math.toRadians((rotationalRate - 90).toDouble())
         val indicatorX = (centerX - radius * Math.cos(angle)).toFloat()
         val indicatorY = (centerY + radius * Math.sin(angle)).toFloat()
-        canvas.drawLine(centerX, centerY, indicatorX, indicatorY, paint)
+        canvas.drawLine(centerX, centerY, indicatorX, indicatorY, indicatorPaint)
     }
 
     fun updateRotationalRate(rotationalRate: Float) {
-        this.rotationalRate = -1 * rotationalRate
+        this.rotationalRate = (-0.75 * rotationalRate).toFloat()
         invalidate()
     }
 }

@@ -42,4 +42,83 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="235dp"
         android:background="@android:color/transparent" />
+
+    <TextView
+        android:id="@+id/armedTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rotationalRateGauge"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="-25dp"
+        android:text="Armed: "
+        android:textSize="16sp"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:id="@+id/steeringModeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/armedTextView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:text="Steering Mode: "
+        android:textSize="16sp"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:id="@+id/driveModeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/steeringModeTextView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:text="Drive Mode: "
+        android:textSize="16sp"
+        android:textColor="@android:color/black" />
+
+    <ProgressBar
+        android:id="@+id/motor1RpmBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="180dp"
+        android:max="10000"
+        android:rotation="270" />
+
+    <ProgressBar
+        android:id="@+id/motor2RpmBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="0dp"
+        android:layout_marginTop="180dp"
+        android:max="10000"
+        android:rotation="270" />
+
+    <ProgressBar
+        android:id="@+id/motor3RpmBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="600dp"
+        android:max="10000"
+        android:rotation="270" />
+
+    <ProgressBar
+        android:id="@+id/motor4RpmBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="0dp"
+        android:layout_marginTop="600dp"
+        android:max="10000"
+        android:rotation="270" />
+        
+
 </RelativeLayout>

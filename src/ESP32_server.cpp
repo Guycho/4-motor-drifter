@@ -46,7 +46,7 @@ void ESP32Server::update_data() {
       control_data.mavlink_data.four_motor_speed.motor4_rpm);
     m_json_data["throttle"] = control_data.throttle;
     m_json_data["steering"] = control_data.steering;
-    m_json_data["arm_enabled"] = control_data.arm_enabled;
+    m_json_data["arm_enabled"] = control_data.arm_enabled ? "Armed" : "Disarmed";
     m_json_data["steering_mode"] = control_data.steering_mode == 0 ? "Normal" : "Gyro";
     m_json_data["drive_mode"] = control_data.drive_mode == 0   ? "AWD"
                               : control_data.drive_mode == 1 ? "CS"
@@ -67,6 +67,11 @@ void ESP32Server::update_data() {
     m_json_data["max_g_force"] = m_max_g_force;
     m_json_data["rotational_rate"] = control_data.mavlink_data.inertial_data.gyro.z;
     m_json_data["max_rpm"] = m_max_rpm;
+
+    // m_json_data["motor1_rpm"] = 1500;
+    // m_json_data["motor2_rpm"] = 5000;
+    // m_json_data["motor3_rpm"] = 7500;
+    // m_json_data["motor4_rpm"] = 10000;
 }
 void ESP32Server::handle_not_found() { m_server.send(404, "text/plain", "File Not Found"); }
 
