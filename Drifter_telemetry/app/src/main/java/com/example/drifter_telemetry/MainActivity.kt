@@ -126,9 +126,7 @@ class MainActivity : AppCompatActivity() {
             val bytes = inputStream.read(buffer)
             val jsonData = String(buffer, 0, bytes)
             Log.d("MainActivity", "Fetched raw data: $jsonData")
-            runOnUiThread {
-                processReceivedData(jsonData)
-            }
+            processReceivedData(jsonData)
         } catch (e: IOException) {
             e.printStackTrace()
             Log.e("MainActivity", "Failed to fetch data: ${e.message}")
@@ -148,7 +146,9 @@ class MainActivity : AppCompatActivity() {
             val jsonObject = buffer.substring(startIndex, endIndex).trim()
             if (jsonObject.isNotEmpty()) {
                 try {
-                    updateUI(jsonObject)
+                    runOnUiThread {
+                        updateUI(jsonObject)
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                     Log.e("MainActivity", "Failed to parse JSON data: ${e.message}")
