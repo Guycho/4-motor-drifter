@@ -19,6 +19,7 @@ PID pid;
 NVM nvm;
 Control control;
 ESP32Server server;
+BluetoothSerial bt_serial;
 
 
 void setup() {
@@ -82,6 +83,7 @@ void setup() {
     server_config.ssid = Config::Server::ssid;
     server_config.password = Config::Server::password;
     server_config.control = &control;
+    server_config.bt_serial = &bt_serial;
     server.init(server_config);
 }
 

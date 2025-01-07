@@ -1,5 +1,10 @@
 package com.example.drifter_telemetry
 
+import android.Manifest
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothSocket
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -8,12 +13,26 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import okhttp3.*
+import androidx.core.app.ActivityCompat
 import org.json.JSONObject
 import java.io.IOException
+import java.io.InputStream
+import java.util.*
+
+// Import the generated R class
+import com.example.drifter_telemetry.R
 
 class MainActivity : AppCompatActivity() {
 
+    private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
+    private lateinit var bluetoothSocket: BluetoothSocket
+    private lateinit var inputStream: InputStream
+    private val handler = Handler(Looper.getMainLooper())
+    private val fetchInterval: Long = 100 // Fetch data every 100 milliseconds
+    private val deviceAddress = "A0:DD:6C:03:9A:EE" // Replace with your ESP32 Bluetooth MAC address
+    private val uuid: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB") // Standard SerialPortService ID
+
+    // Declare views
     private lateinit var gForceView: GForceView
     private lateinit var leftWheelLine: View
     private lateinit var rightWheelLine: View
@@ -25,14 +44,22 @@ class MainActivity : AppCompatActivity() {
     private lateinit var motor2RpmBar: ProgressBar
     private lateinit var motor3RpmBar: ProgressBar
     private lateinit var motor4RpmBar: ProgressBar
-    private val client = OkHttpClient()
-    private val handler = Handler(Looper.getMainLooper())
-    private val fetchInterval: Long = 100 // Fetch data every 100 milliseconds
+
+    private val REQUEST_ENABLE_BT = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Request Bluetooth permissions
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED ||
+            ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN), REQUEST_ENABLE_BT)
+        } else {
+            initializeBluetooth()
+        }
+
+        // Initialize views
         gForceView = findViewById(R.id.gForceView)
         leftWheelLine = findViewById(R.id.leftWheelLine)
         rightWheelLine = findViewById(R.id.rightWheelLine)
@@ -49,40 +76,61 @@ class MainActivity : AppCompatActivity() {
         startFetchingData()
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_ENABLE_BT) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                initializeBluetooth()
+            } else {
+                // Permission denied, show a message to the user
+                Log.e("MainActivity", "Bluetooth permissions denied")
+            }
+        }
+    }
+
+    private fun initializeBluetooth() {
+        val device: BluetoothDevice = bluetoothAdapter!!.getRemoteDevice(deviceAddress)
+        bluetoothSocket = device.createRfcommSocketToServiceRecord(uuid)
+        bluetoothAdapter.cancelDiscovery()
+        try {
+            bluetoothSocket.connect()
+            inputStream = bluetoothSocket.inputStream
+            Log.d("MainActivity", "Bluetooth connected")
+        } catch (e: IOException) {
+            e.printStackTrace()
+            Log.e("MainActivity", "Failed to connect Bluetooth: ${e.message}")
+            try {
+                bluetoothSocket.close()
+            } catch (closeException: IOException) {
+                closeException.printStackTrace()
+            }
+        }
+    }
+
     private fun startFetchingData() {
         handler.post(fetchDataRunnable)
     }
 
     private val fetchDataRunnable = object : Runnable {
         override fun run() {
-            fetchJsonData()
+            fetchBluetoothData()
             handler.postDelayed(this, fetchInterval)
         }
     }
 
-    private fun fetchJsonData() {
-        val url = "http://192.168.4.1/data" // Replace with your ESP32 IP address
-        Log.d("MainActivity", "Fetching data from $url")
-        val request = Request.Builder().url(url).build()
-
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                e.printStackTrace()
-                Log.e("MainActivity", "Failed to fetch data: ${e.message}")
+    private fun fetchBluetoothData() {
+        try {
+            val buffer = ByteArray(1024)
+            val bytes = inputStream.read(buffer)
+            val jsonData = String(buffer, 0, bytes)
+            Log.d("MainActivity", "Fetched data: $jsonData")
+            runOnUiThread {
+                updateUI(jsonData)
             }
-
-            override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    val jsonData = response.body?.string()
-                    Log.d("MainActivity", "Fetched data: $jsonData")
-                    runOnUiThread {
-                        updateUI(jsonData)
-                    }
-                } else {
-                    Log.e("MainActivity", "Failed to fetch data: ${response.message}")
-                }
-            }
-        })
+        } catch (e: IOException) {
+            e.printStackTrace()
+            Log.e("MainActivity", "Failed to fetch data: ${e.message}")
+        }
     }
 
     private fun updateUI(jsonData: String?) {
@@ -108,9 +156,9 @@ class MainActivity : AppCompatActivity() {
             leftWheelLine.rotation = leftSteeringAngle
             rightWheelLine.rotation = rightSteeringAngle
             rotationalRateGauge.updateRotationalRate(rotationalRate)
-            armedTextView.text = "$armed"
-            steeringModeTextView.text = "$steeringMode"
-            driveModeTextView.text = "$driveMode"
+            armedTextView.text = "Armed: $armed"
+            steeringModeTextView.text = "Steering Mode: $steeringMode"
+            driveModeTextView.text = "Drive Mode: $driveMode"
             motor1RpmBar.progress = motor1Rpm
             motor2RpmBar.progress = motor2Rpm
             motor3RpmBar.progress = motor3Rpm
@@ -125,5 +173,10 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         // Stop fetching data when the activity is destroyed
         handler.removeCallbacks(fetchDataRunnable)
+        try {
+            bluetoothSocket.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
     }
 }

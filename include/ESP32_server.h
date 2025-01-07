@@ -5,6 +5,7 @@
 #include <WebServer.h>
 #include <WiFi.h>
 #include <Chrono.h>
+#include <BluetoothSerial.h>
 #include "control.h"
 
 struct ESP32ServerConfig {
@@ -12,6 +13,7 @@ struct ESP32ServerConfig {
     const char* password;
     uint16_t update_delay_ms;
     Control *control;
+    BluetoothSerial *bt_serial;
 };
 
 class ESP32Server {
@@ -27,6 +29,7 @@ class ESP32Server {
     JsonDocument m_json_data;
     Chrono m_data_timer;
     Control *m_control;
+    BluetoothSerial *m_bt_serial;
 
     void handle_root();
     void handle_data();

@@ -7,6 +7,7 @@ ESP32Server::~ESP32Server() {}
 void ESP32Server::init(const ESP32ServerConfig& config) {
     
     m_control = config.control;
+    m_bt_serial = config.bt_serial;
     m_update_delay_ms = config.update_delay_ms;
 
     m_data_timer.start();
@@ -21,6 +22,7 @@ void ESP32Server::init(const ESP32ServerConfig& config) {
     m_server.onNotFound(std::bind(&ESP32Server::handle_not_found, this));
     m_server.begin();
     Serial.println("Server started");
+    m_bt_serial->begin("ESP32_Drifter");
 }
 
 void ESP32Server::handle_root() { m_server.send(200, "text/plain", "ESP32 Server"); }
@@ -68,6 +70,9 @@ void ESP32Server::update_data() {
     m_json_data["rotational_rate"] = control_data.mavlink_data.inertial_data.gyro.z;
     m_json_data["max_rpm"] = m_max_rpm;
 
+    String json;
+    serializeJson(m_json_data, json);
+    m_bt_serial->println(json);
     // m_json_data["motor1_rpm"] = 1500;
     // m_json_data["motor2_rpm"] = 5000;
     // m_json_data["motor3_rpm"] = 7500;
