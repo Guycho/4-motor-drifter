@@ -41,7 +41,8 @@ class MainActivity : AppCompatActivity() {
 
     private val REQUEST_ENABLE_BT = 1
     private val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-    private val updateIntervalMs: Long = 100 // Update UI at 10Hz (100ms)
+    private val updateIntervalMs: Long = 50 // Update UI at 20Hz (50ms)
+    private val buffer = StringBuilder()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -127,21 +128,34 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun processReceivedData(data: String) {
-        // Buffer JSON strings and process them in batches
-        val jsonObject = try {
-            JSONObject(data)
-        } catch (e: Exception) {
-            Log.e("MainActivity", "Invalid JSON: $data")
-            return
+        buffer.append(data)
+
+        var startIndex = 0
+        var endIndex: Int
+
+        while (true) {
+            endIndex = buffer.indexOf("\n", startIndex)
+            if (endIndex == -1) break
+
+            val jsonObject = buffer.substring(startIndex, endIndex).trim()
+            if (jsonObject.isNotEmpty()) {
+                try {
+                    val json = JSONObject(jsonObject)
+                    ioScope.launch {
+                        delay(updateIntervalMs)
+                        withContext(Dispatchers.Main) {
+                            updateUI(json)
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e("MainActivity", "Failed to parse JSON data: ${e.message}")
+                }
+            }
+            startIndex = endIndex + 1
         }
 
-        // Update the UI every 100ms
-        ioScope.launch {
-            delay(updateIntervalMs)
-            withContext(Dispatchers.Main) {
-                updateUI(jsonObject)
-            }
-        }
+        // Remove processed data from buffer
+        buffer.delete(0, startIndex)
     }
 
     private fun updateUI(jsonObject: JSONObject) {
