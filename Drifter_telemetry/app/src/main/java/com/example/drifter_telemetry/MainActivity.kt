@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var bluetoothSocket: BluetoothSocket
     private lateinit var inputStream: InputStream
     private val handler = Handler(Looper.getMainLooper())
-    private val fetchInterval: Long = 50 // Fetch data every 1000 milliseconds (1 second)
+    private val fetchInterval: Long = 50 // Fetch data every 50 milliseconds (20Hz)
     private val deviceAddress = "A0:DD:6C:03:9A:EE" // Replace with your ESP32 Bluetooth MAC address
     private val uuid: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB") // Standard SerialPortService ID
 
@@ -184,9 +184,9 @@ class MainActivity : AppCompatActivity() {
             leftWheelLine.rotation = leftSteeringAngle
             rightWheelLine.rotation = rightSteeringAngle
             rotationalRateGauge.updateRotationalRate(rotationalRate)
-            armedTextView.text = "$armed"
-            steeringModeTextView.text = "$steeringMode"
-            driveModeTextView.text = "$driveMode"
+            armedTextView.text = armed
+            steeringModeTextView.text = steeringMode
+            driveModeTextView.text = driveMode
             motor1RpmBar.progress = motor1Rpm
             motor2RpmBar.progress = motor2Rpm
             motor3RpmBar.progress = motor3Rpm
