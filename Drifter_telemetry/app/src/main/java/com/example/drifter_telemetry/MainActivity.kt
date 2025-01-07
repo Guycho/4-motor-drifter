@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothSocket
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
+import android.os.HandlerThread
 import android.os.Looper
 import android.util.Log
 import android.view.View
@@ -27,7 +28,8 @@ class MainActivity : AppCompatActivity() {
     private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
     private lateinit var bluetoothSocket: BluetoothSocket
     private lateinit var inputStream: InputStream
-    private val handler = Handler(Looper.getMainLooper())
+    private lateinit var backgroundHandler: Handler
+    private val mainHandler = Handler(Looper.getMainLooper())
     private val fetchInterval: Long = 50 // Fetch data every 50 milliseconds (20Hz)
     private val deviceAddress = "A0:DD:6C:03:9A:EE" // Replace with your ESP32 Bluetooth MAC address
     private val uuid: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB") // Standard SerialPortService ID
@@ -73,6 +75,17 @@ class MainActivity : AppCompatActivity() {
         motor3RpmBar = findViewById(R.id.motor3RpmBar)
         motor4RpmBar = findViewById(R.id.motor4RpmBar)
 
+        // Enable hardware acceleration for specific views
+        gForceView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+        leftWheelLine.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+        rightWheelLine.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+        rotationalRateGauge.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+
+        // Start background thread for Bluetooth data fetching
+        val handlerThread = HandlerThread("BluetoothDataThread")
+        handlerThread.start()
+        backgroundHandler = Handler(handlerThread.looper)
+
         // Start fetching data continuously
         startFetchingData()
     }
@@ -109,13 +122,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startFetchingData() {
-        handler.post(fetchDataRunnable)
+        backgroundHandler.post(fetchDataRunnable)
     }
 
     private val fetchDataRunnable = object : Runnable {
         override fun run() {
             fetchBluetoothData()
-            handler.postDelayed(this, fetchInterval)
+            backgroundHandler.postDelayed(this, fetchInterval)
         }
     }
 
@@ -144,7 +157,7 @@ class MainActivity : AppCompatActivity() {
             val jsonObject = buffer.substring(startIndex, endIndex).trim()
             if (jsonObject.isNotEmpty()) {
                 try {
-                    runOnUiThread {
+                    mainHandler.post {
                         updateUI(jsonObject)
                     }
                 } catch (e: Exception) {
@@ -198,7 +211,7 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         // Stop fetching data when the activity is destroyed
-        handler.removeCallbacks(fetchDataRunnable)
+        backgroundHandler.removeCallbacks(fetchDataRunnable)
         try {
             bluetoothSocket.close()
         } catch (e: IOException) {
