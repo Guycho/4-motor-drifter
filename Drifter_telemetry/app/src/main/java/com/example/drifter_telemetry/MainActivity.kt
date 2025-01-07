@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
 
     private val REQUEST_ENABLE_BT = 1
     private val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-    private val updateIntervalMs: Long = 50 // Update UI at 20Hz (50ms)
+    private val updateIntervalMs: Long = 100 // Update UI at 20Hz (50ms)
     private val buffer = StringBuilder()
 
     @RequiresApi(Build.VERSION_CODES.S)
