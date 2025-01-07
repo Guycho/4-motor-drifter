@@ -6,31 +6,23 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.Handler
-import android.os.HandlerThread
-import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import kotlinx.coroutines.*
 import org.json.JSONObject
 import java.io.IOException
 import java.io.InputStream
 import java.util.*
-
-// Import the generated R class
-import com.example.drifter_telemetry.R
 
 class MainActivity : AppCompatActivity() {
 
     private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
     private lateinit var bluetoothSocket: BluetoothSocket
     private lateinit var inputStream: InputStream
-    private lateinit var backgroundHandler: Handler
-    private val mainHandler = Handler(Looper.getMainLooper())
-    private val fetchInterval: Long = 50 // Fetch data every 50 milliseconds (20Hz)
     private val deviceAddress = "A0:DD:6C:03:9A:EE" // Replace with your ESP32 Bluetooth MAC address
     private val uuid: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB") // Standard SerialPortService ID
 
@@ -48,7 +40,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var motor4RpmBar: ProgressBar
 
     private val REQUEST_ENABLE_BT = 1
-    private val buffer = StringBuilder()
+    private val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private val updateIntervalMs: Long = 100 // Update UI at 10Hz (100ms)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,12 +50,34 @@ class MainActivity : AppCompatActivity() {
         // Request Bluetooth permissions
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED ||
             ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN), REQUEST_ENABLE_BT)
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN),
+                REQUEST_ENABLE_BT
+            )
         } else {
             initializeBluetooth()
         }
 
         // Initialize views
+        initializeViews()
+
+        // Start fetching data
+        startFetchingData()
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_ENABLE_BT) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                initializeBluetooth()
+            } else {
+                Log.e("MainActivity", "Bluetooth permissions denied")
+            }
+        }
+    }
+
+    private fun initializeViews() {
         gForceView = findViewById(R.id.gForceView)
         leftWheelLine = findViewById(R.id.leftWheelLine)
         rightWheelLine = findViewById(R.id.rightWheelLine)
@@ -74,32 +89,6 @@ class MainActivity : AppCompatActivity() {
         motor2RpmBar = findViewById(R.id.motor2RpmBar)
         motor3RpmBar = findViewById(R.id.motor3RpmBar)
         motor4RpmBar = findViewById(R.id.motor4RpmBar)
-
-        // Enable hardware acceleration for specific views
-        gForceView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
-        leftWheelLine.setLayerType(View.LAYER_TYPE_HARDWARE, null)
-        rightWheelLine.setLayerType(View.LAYER_TYPE_HARDWARE, null)
-        rotationalRateGauge.setLayerType(View.LAYER_TYPE_HARDWARE, null)
-
-        // Start background thread for Bluetooth data fetching
-        val handlerThread = HandlerThread("BluetoothDataThread")
-        handlerThread.start()
-        backgroundHandler = Handler(handlerThread.looper)
-
-        // Start fetching data continuously
-        startFetchingData()
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_ENABLE_BT) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                initializeBluetooth()
-            } else {
-                // Permission denied, show a message to the user
-                Log.e("MainActivity", "Bluetooth permissions denied")
-            }
-        }
     }
 
     private fun initializeBluetooth() {
@@ -111,7 +100,6 @@ class MainActivity : AppCompatActivity() {
             inputStream = bluetoothSocket.inputStream
             Log.d("MainActivity", "Bluetooth connected")
         } catch (e: IOException) {
-            e.printStackTrace()
             Log.e("MainActivity", "Failed to connect Bluetooth: ${e.message}")
             try {
                 bluetoothSocket.close()
@@ -122,62 +110,42 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startFetchingData() {
-        backgroundHandler.post(fetchDataRunnable)
-    }
-
-    private val fetchDataRunnable = object : Runnable {
-        override fun run() {
-            fetchBluetoothData()
-            backgroundHandler.postDelayed(this, fetchInterval)
-        }
-    }
-
-    private fun fetchBluetoothData() {
-        try {
-            val buffer = ByteArray(1024)
-            val bytes = inputStream.read(buffer)
-            val jsonData = String(buffer, 0, bytes)
-            processReceivedData(jsonData)
-        } catch (e: IOException) {
-            e.printStackTrace()
-            Log.e("MainActivity", "Failed to fetch data: ${e.message}")
+        ioScope.launch {
+            try {
+                while (isActive) {
+                    val buffer = ByteArray(1024)
+                    val bytesRead = inputStream.read(buffer)
+                    if (bytesRead > 0) {
+                        val jsonData = String(buffer, 0, bytesRead)
+                        processReceivedData(jsonData)
+                    }
+                }
+            } catch (e: IOException) {
+                Log.e("MainActivity", "Error reading Bluetooth data: ${e.message}")
+            }
         }
     }
 
     private fun processReceivedData(data: String) {
-        buffer.append(data)
-
-        var startIndex = 0
-        var endIndex: Int
-
-        while (true) {
-            endIndex = buffer.indexOf("\n", startIndex)
-            if (endIndex == -1) break
-
-            val jsonObject = buffer.substring(startIndex, endIndex).trim()
-            if (jsonObject.isNotEmpty()) {
-                try {
-                    mainHandler.post {
-                        updateUI(jsonObject)
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    Log.e("MainActivity", "Failed to parse JSON data: ${e.message}")
-                }
-            }
-            startIndex = endIndex + 1
+        // Buffer JSON strings and process them in batches
+        val jsonObject = try {
+            JSONObject(data)
+        } catch (e: Exception) {
+            Log.e("MainActivity", "Invalid JSON: $data")
+            return
         }
 
-        // Remove processed data from buffer
-        buffer.delete(0, startIndex)
+        // Update the UI every 100ms
+        ioScope.launch {
+            delay(updateIntervalMs)
+            withContext(Dispatchers.Main) {
+                updateUI(jsonObject)
+            }
+        }
     }
 
-    private fun updateUI(jsonData: String?) {
-        if (jsonData == null) return
-
+    private fun updateUI(jsonObject: JSONObject) {
         try {
-            val jsonObject = JSONObject(jsonData)
-
             val gForceX = jsonObject.getDouble("g_force_x").toFloat()
             val gForceY = jsonObject.getDouble("g_force_y").toFloat()
             val leftSteeringAngle = jsonObject.getDouble("left_steering").toFloat()
@@ -191,6 +159,7 @@ class MainActivity : AppCompatActivity() {
             val motor3Rpm = jsonObject.getInt("motor3_rpm")
             val motor4Rpm = jsonObject.getInt("motor4_rpm")
 
+            // Update UI components
             gForceView.updateGForce(gForceX, gForceY)
             leftWheelLine.rotation = leftSteeringAngle
             rightWheelLine.rotation = rightSteeringAngle
@@ -203,15 +172,13 @@ class MainActivity : AppCompatActivity() {
             motor3RpmBar.progress = motor3Rpm
             motor4RpmBar.progress = motor4Rpm
         } catch (e: Exception) {
-            e.printStackTrace()
-            Log.e("MainActivity", "Failed to parse JSON data: ${e.message}")
+            Log.e("MainActivity", "Error updating UI: ${e.message}")
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        // Stop fetching data when the activity is destroyed
-        backgroundHandler.removeCallbacks(fetchDataRunnable)
+        ioScope.cancel() // Cancel all coroutines
         try {
             bluetoothSocket.close()
         } catch (e: IOException) {
