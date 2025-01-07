@@ -82,6 +82,7 @@ void setup() {
     ESP32ServerConfig server_config;
     server_config.ssid = Config::Server::ssid;
     server_config.password = Config::Server::password;
+    server_config.update_delay_ms = Config::Server::update_delay_ms;
     server_config.control = &control;
     server_config.bt_serial = &bt_serial;
     server.init(server_config);
