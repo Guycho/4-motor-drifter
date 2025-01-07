@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var bluetoothSocket: BluetoothSocket
     private lateinit var inputStream: InputStream
     private val handler = Handler(Looper.getMainLooper())
-    private val fetchInterval: Long = 100 // Fetch data every 100 milliseconds
+    private val fetchInterval: Long = 1000 // Fetch data every 1000 milliseconds (1 second)
     private val deviceAddress = "A0:DD:6C:03:9A:EE" // Replace with your ESP32 Bluetooth MAC address
     private val uuid: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB") // Standard SerialPortService ID
 
@@ -113,6 +113,7 @@ class MainActivity : AppCompatActivity() {
 
     private val fetchDataRunnable = object : Runnable {
         override fun run() {
+            Log.d("MainActivity", "Running fetchDataRunnable")
             fetchBluetoothData()
             handler.postDelayed(this, fetchInterval)
         }
@@ -123,13 +124,28 @@ class MainActivity : AppCompatActivity() {
             val buffer = ByteArray(1024)
             val bytes = inputStream.read(buffer)
             val jsonData = String(buffer, 0, bytes)
-            Log.d("MainActivity", "Fetched data: $jsonData")
+            Log.d("MainActivity", "Fetched raw data: $jsonData")
             runOnUiThread {
-                updateUI(jsonData)
+                processReceivedData(jsonData)
             }
         } catch (e: IOException) {
             e.printStackTrace()
             Log.e("MainActivity", "Failed to fetch data: ${e.message}")
+        }
+    }
+
+    private fun processReceivedData(data: String) {
+        // Split the received data into individual JSON objects using newline delimiter
+        val jsonObjects = data.split("\n").filter { it.isNotBlank() }
+
+        // Parse each JSON object separately
+        for (jsonObject in jsonObjects) {
+            try {
+                updateUI(jsonObject)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.e("MainActivity", "Failed to parse JSON data: ${e.message}")
+            }
         }
     }
 

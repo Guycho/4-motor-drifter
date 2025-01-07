@@ -4,7 +4,7 @@ package com.example.drifter_telemetry;
 public class TelemetryData {
     public float throttle;
     public float steering;
-    public boolean arm_enabled;
+    public String arm_enabled;
     public String steering_mode;
     public String drive_mode;
     public int motor1_rpm;
