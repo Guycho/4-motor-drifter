@@ -10,6 +10,7 @@ struct WheelsMixerConfig {
     uint16_t min_pulse[Config::num_wheels];
     uint16_t max_pulse[Config::num_wheels];
 };
+
 struct WheelsMixerData {
     float motor_speed[Config::num_wheels];
 };

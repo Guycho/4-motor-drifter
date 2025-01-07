@@ -29,6 +29,7 @@ struct InputControllerData {
     bool reset_trim;
     bool new_data;
 };
+
 struct InputControllerConfig {
     const char* mac;
     float dead_band;
