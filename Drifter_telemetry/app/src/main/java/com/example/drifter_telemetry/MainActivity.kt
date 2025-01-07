@@ -114,7 +114,6 @@ class MainActivity : AppCompatActivity() {
 
     private val fetchDataRunnable = object : Runnable {
         override fun run() {
-            Log.d("MainActivity", "Running fetchDataRunnable")
             fetchBluetoothData()
             handler.postDelayed(this, fetchInterval)
         }
@@ -125,7 +124,6 @@ class MainActivity : AppCompatActivity() {
             val buffer = ByteArray(1024)
             val bytes = inputStream.read(buffer)
             val jsonData = String(buffer, 0, bytes)
-            Log.d("MainActivity", "Fetched raw data: $jsonData")
             processReceivedData(jsonData)
         } catch (e: IOException) {
             e.printStackTrace()
