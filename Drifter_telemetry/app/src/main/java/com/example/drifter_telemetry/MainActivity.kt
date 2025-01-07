@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var motor4RpmBar: ProgressBar
 
     private val REQUEST_ENABLE_BT = 1
+    private val buffer = StringBuilder()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -135,18 +136,29 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun processReceivedData(data: String) {
-        // Split the received data into individual JSON objects using newline delimiter
-        val jsonObjects = data.split("\n").filter { it.isNotBlank() }
+        buffer.append(data)
 
-        // Parse each JSON object separately
-        for (jsonObject in jsonObjects) {
-            try {
-                updateUI(jsonObject)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Log.e("MainActivity", "Failed to parse JSON data: ${e.message}")
+        var startIndex = 0
+        var endIndex: Int
+
+        while (true) {
+            endIndex = buffer.indexOf("\n", startIndex)
+            if (endIndex == -1) break
+
+            val jsonObject = buffer.substring(startIndex, endIndex).trim()
+            if (jsonObject.isNotEmpty()) {
+                try {
+                    updateUI(jsonObject)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Log.e("MainActivity", "Failed to parse JSON data: ${e.message}")
+                }
             }
+            startIndex = endIndex + 1
         }
+
+        // Remove processed data from buffer
+        buffer.delete(0, startIndex)
     }
 
     private fun updateUI(jsonData: String?) {
