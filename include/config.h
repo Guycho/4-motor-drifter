@@ -7,7 +7,6 @@ enum WheelsPositions { FR = 0, RR = 1, RL = 2, FL = 3 };
 enum SteeringPositions { R = 0, L = 1 };
 
 namespace Config {
-namespace Car {
 const uint8_t num_wheels = 4;
 const uint8_t num_steering = 2;
 const float min_percentage = -100.0;
@@ -60,6 +59,5 @@ extern const float dead_band;
 namespace ESPNow {
 extern const uint8_t peer_mac_address[];
 }  // namespace ESPNow
-}  // namespace Car
 }  // namespace Config
 #endif  // CONFIG_H

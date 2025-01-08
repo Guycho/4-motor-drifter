@@ -5,7 +5,7 @@ SteeringMixer::~SteeringMixer() {}
 
 void SteeringMixer::init(const SteeringMixerConfig &config) {
     m_mav_bridge = *config.mav_bridge;
-    for (int i = 0; i < Config::Car::num_steering; i++) {
+    for (int i = 0; i < Config::num_steering; i++) {
         m_pin[i] = config.pin[i];
         m_min_pulse[i] = config.min_pulse[i];
         m_max_pulse[i] = config.max_pulse[i];
@@ -13,12 +13,12 @@ void SteeringMixer::init(const SteeringMixerConfig &config) {
 }
 
 void SteeringMixer::run(SteeringMixerData &Steering_mixer_data) {
-    for (int i = 0; i < Config::Car::num_steering; i++) {
+    for (int i = 0; i < Config::num_steering; i++) {
         MotorSpeed motor_speed;
         motor_speed.motor_pin = m_pin[i];
         apply_trim(Steering_mixer_data);
         float temp_value = Utils::Calcs::map_float(Steering_mixer_data.motor_speed[i],
-          Config::Car::min_percentage, Config::Car::max_percentage, m_min_pulse[i], m_max_pulse[i]);
+          Config::min_percentage, Config::max_percentage, m_min_pulse[i], m_max_pulse[i]);
         float final_value =
           Utils::Calcs::constrain_float(temp_value, m_min_pulse[i], m_max_pulse[i]);
         motor_speed.motor_value = final_value;
@@ -31,7 +31,7 @@ void SteeringMixer::set_trim(SteeringMixerData &Steering_mixer_data) {
 }
 
 void SteeringMixer::apply_trim(SteeringMixerData &Steering_mixer_data) {
-    for (int i = 0; i < Config::Car::num_steering; i++) {
+    for (int i = 0; i < Config::num_steering; i++) {
         Steering_mixer_data.motor_speed[i] += m_trim.motor_speed[i];
     }
 }

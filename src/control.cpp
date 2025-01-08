@@ -54,10 +54,9 @@ void Control::run() {
             case GYRO:
                 desired_omega = m_steering;
                 current_omega = Utils::Calcs::constrain_float(
-                  Utils::Calcs::map_float(m_mavlink_data.inertial_data.gyro.z,
-                    -Config::Car::max_omega, Config::Car::max_omega, Config::Car::min_percentage,
-                    Config::Car::max_percentage),
-                  Config::Car::min_percentage, Config::Car::max_percentage);
+                  Utils::Calcs::map_float(m_mavlink_data.inertial_data.gyro.z, -Config::max_omega,
+                    Config::max_omega, Config::min_percentage, Config::max_percentage),
+                  Config::min_percentage, Config::max_percentage);
                 pid_output = m_pid.compute(desired_omega, current_omega);
                 steering_mixer_data.motor_speed[R] = pid_output;
                 steering_mixer_data.motor_speed[L] = pid_output;
@@ -79,10 +78,10 @@ void Control::run() {
                 wheels_mixer_data.motor_speed[FL] = m_throttle;
                 break;
             case CS:
-                wheels_mixer_data.motor_speed[FR] = m_throttle * Config::Car::cs_ratio;
+                wheels_mixer_data.motor_speed[FR] = m_throttle * Config::cs_ratio;
                 wheels_mixer_data.motor_speed[RR] = m_throttle;
                 wheels_mixer_data.motor_speed[RL] = m_throttle;
-                wheels_mixer_data.motor_speed[FL] = m_throttle * Config::Car::cs_ratio;
+                wheels_mixer_data.motor_speed[FL] = m_throttle * Config::cs_ratio;
                 break;
             case RWD:
                 wheels_mixer_data.motor_speed[FR] = 0;
@@ -98,10 +97,10 @@ void Control::run() {
                 break;
         }
         if (m_lock_rear_right) {
-            wheels_mixer_data.motor_speed[RR] = Config::Car::min_percentage;
+            wheels_mixer_data.motor_speed[RR] = Config::min_percentage;
         }
         if (m_lock_rear_left) {
-            wheels_mixer_data.motor_speed[RL] = Config::Car::min_percentage;
+            wheels_mixer_data.motor_speed[RL] = Config::min_percentage;
         }
     } else {
         steering_mixer_data.motor_speed[R] = 0;
@@ -128,7 +127,7 @@ void Control::run() {
 void Control::apply_multiplier(SteeringMixerData &steering_mixer_data) {
     float adjustment_value =
       (steering_mixer_data.motor_speed[R] + steering_mixer_data.motor_speed[L]) *
-      Config::Car::steering_r_l_ratio;
+      Config::steering_r_l_ratio;
     if (steering_mixer_data.motor_speed[R] + steering_mixer_data.motor_speed[L] > 0) {
         steering_mixer_data.motor_speed[L] -= adjustment_value;
     } else {
@@ -139,10 +138,10 @@ void Control::apply_multiplier(SteeringMixerData &steering_mixer_data) {
 void Control::apply_trim(InputControllerData &input_data) {
     if (input_data.trim_r) {
         if (input_data.trim_direction_r) {
-            m_nvm_data.steering_mixer_data.motor_speed[R] += Config::Car::trim_increment;
+            m_nvm_data.steering_mixer_data.motor_speed[R] += Config::trim_increment;
         }
         if (input_data.trim_direction_l) {
-            m_nvm_data.steering_mixer_data.motor_speed[R] -= Config::Car::trim_increment;
+            m_nvm_data.steering_mixer_data.motor_speed[R] -= Config::trim_increment;
         }
         if (input_data.reset_trim) {
             m_nvm_data.steering_mixer_data.motor_speed[R] = 0;
@@ -150,10 +149,10 @@ void Control::apply_trim(InputControllerData &input_data) {
     }
     if (input_data.trim_l) {
         if (input_data.trim_direction_r) {
-            m_nvm_data.steering_mixer_data.motor_speed[L] += Config::Car::trim_increment;
+            m_nvm_data.steering_mixer_data.motor_speed[L] += Config::trim_increment;
         }
         if (input_data.trim_direction_l) {
-            m_nvm_data.steering_mixer_data.motor_speed[L] -= Config::Car::trim_increment;
+            m_nvm_data.steering_mixer_data.motor_speed[L] -= Config::trim_increment;
         }
         if (input_data.reset_trim) {
             m_nvm_data.steering_mixer_data.motor_speed[L] = 0;
@@ -161,21 +160,21 @@ void Control::apply_trim(InputControllerData &input_data) {
     }
     if (input_data.trim_throttle) {
         if (input_data.trim_direction_f) {
-            m_nvm_data.throttle_trim += Config::Car::trim_increment;
+            m_nvm_data.throttle_trim += Config::trim_increment;
         }
         if (input_data.trim_direction_b) {
-            m_nvm_data.throttle_trim -= Config::Car::trim_increment;
+            m_nvm_data.throttle_trim -= Config::trim_increment;
         }
         if (input_data.reset_trim) {
             m_nvm_data.throttle_trim = 0;
         }
-    }   
+    }
     if (input_data.trim_steering) {
         if (input_data.trim_direction_r) {
-            m_nvm_data.steering_trim += Config::Car::trim_increment;
+            m_nvm_data.steering_trim += Config::trim_increment;
         }
         if (input_data.trim_direction_l) {
-            m_nvm_data.steering_trim -= Config::Car::trim_increment;
+            m_nvm_data.steering_trim -= Config::trim_increment;
         }
         if (input_data.reset_trim) {
             m_nvm_data.steering_trim = 0;
@@ -187,6 +186,4 @@ void Control::apply_trim(InputControllerData &input_data) {
     }
 }
 
-ControlPrintData Control::get_print_data() {
-    return m_print_data;
-}
+ControlPrintData Control::get_print_data() { return m_print_data; }

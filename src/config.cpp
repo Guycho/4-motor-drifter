@@ -1,9 +1,7 @@
 #include "config.h"
 
 namespace Config {
-namespace Server {
-const char *ssid = "drifter";
-const char *password = "drifter123";
+namespace Transceiver {
 const uint16_t update_delay_ms = 100;
 }  // namespace Server
 namespace Motor {
@@ -17,7 +15,7 @@ const uint8_t pin[num_steering] = {7, 8};
 const uint16_t min_pulse[num_steering] = {1000, 1000};
 const uint16_t max_pulse[num_steering] = {2000, 2000};
 }  // namespace Steering
-}  // namespace Esc
+}  // namespace Motor
 namespace PIDController {
 extern const float kp = 1;
 extern const float ki = 0.1;

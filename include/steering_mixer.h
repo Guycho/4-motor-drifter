@@ -6,12 +6,12 @@
 
 struct SteeringMixerConfig {
     MavBridge *mav_bridge;
-    uint8_t pin[Config::Car::num_steering];
-    uint16_t min_pulse[Config::Car::num_steering];
-    uint16_t max_pulse[Config::Car::num_steering];
+    uint8_t pin[Config::num_steering];
+    uint16_t min_pulse[Config::num_steering];
+    uint16_t max_pulse[Config::num_steering];
 };
 struct SteeringMixerData {
-    float motor_speed[Config::Car::num_steering];
+    float motor_speed[Config::num_steering];
 };
 
 enum SteeringMode { NORMAL = 0, GYRO = 1 };
@@ -35,9 +35,9 @@ class SteeringMixer {
     
     void apply_trim(SteeringMixerData &Steering_mixer_data);
 
-    uint8_t m_pin[Config::Car::num_steering];
-    uint16_t m_min_pulse[Config::Car::num_steering];
-    uint16_t m_max_pulse[Config::Car::num_steering];
+    uint8_t m_pin[Config::num_steering];
+    uint16_t m_min_pulse[Config::num_steering];
+    uint16_t m_max_pulse[Config::num_steering];
 
     static constexpr SteeringMode steering_modes[] = {NORMAL, GYRO};
     static constexpr uint8_t NUM_STEERING_MODES =
