@@ -6,13 +6,13 @@
 
 struct WheelsMixerConfig {
     MavBridge *mav_bridge;
-    uint8_t pin[Config::num_wheels];
-    uint16_t min_pulse[Config::num_wheels];
-    uint16_t max_pulse[Config::num_wheels];
+    uint8_t pin[Config::Car::num_wheels];
+    uint16_t min_pulse[Config::Car::num_wheels];
+    uint16_t max_pulse[Config::Car::num_wheels];
 };
 
 struct WheelsMixerData {
-    float motor_speed[Config::num_wheels];
+    float motor_speed[Config::Car::num_wheels];
 };
 
 enum DriveMode { AWD = 0, CS = 1, RWD = 2 };
@@ -33,9 +33,9 @@ class WheelsMixer {
    private:
     MavBridge m_mav_bridge;
     WheelsMixerData m_wheels_mixer_data;
-    uint8_t m_pin[Config::num_wheels];
-    uint16_t m_min_pulse[Config::num_wheels];
-    uint16_t m_max_pulse[Config::num_wheels];
+    uint8_t m_pin[Config::Car::num_wheels];
+    uint16_t m_min_pulse[Config::Car::num_wheels];
+    uint16_t m_max_pulse[Config::Car::num_wheels];
 
     static constexpr DriveMode drive_modes[] = {AWD, CS, RWD};
     static constexpr uint8_t NUM_DRIVE_MODES = sizeof(drive_modes) / sizeof(drive_modes[0]);

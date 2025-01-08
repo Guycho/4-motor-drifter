@@ -7,6 +7,7 @@ enum WheelsPositions { FR = 0, RR = 1, RL = 2, FL = 3 };
 enum SteeringPositions { R = 0, L = 1 };
 
 namespace Config {
+namespace Car {
 const uint8_t num_wheels = 4;
 const uint8_t num_steering = 2;
 const float min_percentage = -100.0;
@@ -15,11 +16,9 @@ const float max_omega = 360; // deg/s
 const float steering_r_l_ratio = 0.1;
 const float trim_increment = 0.01;
 const float cs_ratio = 0.7;
-namespace Server {
-extern const char *ssid;
-extern const char *password;
+namespace Transceiver {
 extern const uint16_t update_delay_ms;
-}  // namespace Server
+}  // namespace Transceiver
 namespace Motor {
 namespace Wheel {
 extern const uint8_t pin[];
@@ -58,5 +57,9 @@ namespace PS4Controller {
 extern const char *mac;
 extern const float dead_band;
 }  // namespace PS4Controller
+namespace ESPNow {
+extern const uint8_t peer_mac_address[];
+}  // namespace ESPNow
+}  // namespace Car
 }  // namespace Config
 #endif  // CONFIG_H
