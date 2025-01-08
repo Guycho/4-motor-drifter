@@ -1,34 +1,35 @@
-#include <Chrono.h>
-
 #include "ESP_now_handler.h"
 #include "PID.h"
 #include "config.h"
 #include "control.h"
-#include "input.h"
+#include "input_controller.h"
 #include "mav_bridge.h"
 #include "nvm.h"
 #include "steering_mixer.h"
 #include "transceiver.h"
 #include "wheels_mixer.h"
 
-Chrono print_timer;
+ESPNowHandler esp_now_handler(Config::ESPNow::peer_mac_address);
+Transceiver transceiver;
+InputController input_controller;
 MavBridge mav_bridge;
 SteeringMixer steering_mixer;
 WheelsMixer wheels_mixer;
 PID pid;
 NVM nvm;
 Control control;
-Transceiver transceiver;
-ESPNowHandler esp_now_handler(Config::ESPNow::peer_mac_address);
 
 void setup() {
     Serial.begin(9600);
-    print_timer.start();
 
-    InputControllerConfig input_config;
-    input_config.mac = Config::PS4Controller::mac;
-    input_config.dead_band = Config::PS4Controller::dead_band;
-    init_ps4(input_config);
+    TransceiverConfig transceiver_config;
+    transceiver_config.update_delay_ms = Config::Transceiver::update_delay_ms;
+    transceiver_config.esp_now_handler = &esp_now_handler;
+    transceiver.init(transceiver_config);
+
+    InputControllerConfig input_controller_config;
+    input_controller_config.transceiver = &transceiver;
+    input_controller.init(input_controller_config);
 
     MavBridgeConfig mav_config;
     mav_config.serial = Config::MavlinkBridge::serial;
@@ -76,44 +77,14 @@ void setup() {
     control_config.wheels_mixer = &wheels_mixer;
     control_config.pid = &pid;
     control_config.nvm = &nvm;
+    control_config.input_controller = &input_controller;
+    control_config.transceiver = &transceiver;
     control.init(control_config);
 
     esp_now_handler.init();
 
-    TransceiverConfig transceiver_config;
-    transceiver_config.update_delay_ms = Config::Transceiver::update_delay_ms;
-    transceiver_config.control = &control;
-    transceiver_config.esp_now_handler = &esp_now_handler;
-    transceiver.init(transceiver_config);
 }
 
 void loop() {
     control.run();
-    transceiver.update_data();
-    if (print_timer.hasPassed(2500, true)) {
-        ControlPrintData print_data = control.get_print_data();
-        Serial.print("Throttle: ");
-        Serial.print(print_data.throttle);
-        Serial.print(" Steering: ");
-        Serial.print(print_data.steering);
-        Serial.print(" Arm enabled: ");
-        Serial.print(print_data.arm_enabled);
-        Serial.print(" Steering mode: ");
-        Serial.print(print_data.steering_mode);
-        Serial.print(" Drive mode: ");
-        Serial.print(print_data.drive_mode);
-        Serial.print(" Battery voltage: ");
-        Serial.print(print_data.mavlink_data.battery_voltage);
-        Serial.print(" Wheels mixer data: ");
-        for (int i = 0; i < Config::num_wheels; i++) {
-            Serial.print(print_data.wheels_mixer_data.motor_speed[i]);
-            Serial.print(" ");
-        }
-        Serial.print(" Steering mixer data: ");
-        for (int i = 0; i < Config::num_steering; i++) {
-            Serial.print(print_data.steering_mixer_data.motor_speed[i]);
-            Serial.print(" ");
-        }
-        Serial.println();
-    }
 }

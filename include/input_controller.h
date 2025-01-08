@@ -1,13 +1,9 @@
 #ifndef INPUT_CONTROLLER_H
 #define INPUT_CONTROLLER_H
 
-#include <PS4Controller.h>
-
-#include "esp_bt_device.h"
-#include "esp_bt_main.h"
-#include "esp_err.h"
-#include "esp_gap_bt_api.h"
-#include "utils.h"
+#include <Arduino.h>
+#include <ArduinoJson.h>
+#include "transceiver.h"
 
 struct InputControllerData {
     float throttle;
@@ -31,11 +27,23 @@ struct InputControllerData {
 };
 
 struct InputControllerConfig {
-    const char* mac;
-    float dead_band;
+Transceiver *transceiver;
 };
 
-void init_ps4(const InputControllerConfig config);
-InputControllerData get_input_data();
+class InputController {
+   public:
+    // Constructor
+    InputController();
+
+    // Destructor
+    ~InputController();
+
+    void init(const InputControllerConfig &config);
+    InputControllerData get_input_data();
+
+   private:
+    Transceiver *m_transceiver;
+    InputControllerData m_input_data;
+};
 
 #endif  // INPUT_CONTROLLER_H

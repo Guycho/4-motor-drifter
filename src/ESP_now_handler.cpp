@@ -44,29 +44,33 @@ void ESPNowHandler::send_data(const String &data) {
     esp_err_t result = esp_now_send(peerMacAddress, (uint8_t *)data.c_str(), data.length());
 
     if (result == ESP_OK) {
-        Serial.println("Sent with success");
+        // Serial.println("Sent with success");
     } else {
         const char *errorName = esp_err_to_name(result);
-        Serial.print("Error sending data: ");
-        Serial.println(errorName);
+        // Serial.print("Error sending data: ");
+        // Serial.println(errorName);
     }
 }
 
 void ESPNowHandler::on_data_sent(const uint8_t *mac_addr, esp_now_send_status_t status) {
-    Serial.print("Last Packet Send Status: ");
-    Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+    // Serial.print("Last Packet Send Status: ");
+    // Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
 }
 
 void ESPNowHandler::on_data_recv(const uint8_t *mac_addr, const uint8_t *data, int data_len) {
-    Serial.print("Received data from: ");
+    // Serial.print("Received data from: ");
     for (int i = 0; i < 6; i++) {
         Serial.printf("%02x", mac_addr[i]);
         if (i < 5) Serial.print(":");
     }
-    Serial.print(" - Data: ");
-    Serial.write(data, data_len);
-    Serial.println();
+    m_data = String((char *)data);
+    
+    // Serial.print(" - Data: ");
+    // Serial.write(data, data_len);
+    // Serial.println();
 }
+
+String ESPNowHandler::get_data() { return m_data; }
 
 void ESPNowHandler::on_data_sent_static(const uint8_t *mac_addr, esp_now_send_status_t status) {
     if (instance) {
