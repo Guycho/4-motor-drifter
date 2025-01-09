@@ -5,25 +5,25 @@ Control::~Control() {}
 
 void Control::init(const ControlConfig &config) {
     m_hb_timer.start();
-    m_mav_bridge = *config.mav_bridge;
-    m_steering_mixer = *config.steering_mixer;
-    m_wheels_mixer = *config.wheels_mixer;
-    m_pid = *config.pid;
-    m_nvm = *config.nvm;
-    m_input_controller = *config.input_controller;
-    m_transceiver = *config.transceiver;
-    m_nvm_data = m_nvm.get_data();
+    m_mav_bridge = config.mav_bridge;
+    m_steering_mixer = config.steering_mixer;
+    m_wheels_mixer = config.wheels_mixer;
+    m_pid = config.pid;
+    m_nvm = config.nvm;
+    m_input_controller = config.input_controller;
+    m_transceiver = config.transceiver;
+    m_nvm_data = m_nvm->get_data();
     m_arm_enabled = false;
     m_throttle = 0;
     m_steering = 0;
-    NUM_STEERING_MODES = m_steering_mixer.get_num_of_steering_modes();
-    NUM_DRIVE_MODES = m_wheels_mixer.get_num_of_drive_modes();
+    NUM_STEERING_MODES = m_steering_mixer->get_num_of_steering_modes();
+    NUM_DRIVE_MODES = m_wheels_mixer->get_num_of_drive_modes();
 }
 
 void Control::run() {
-    m_mav_bridge.run();
-    m_mavlink_data = m_mav_bridge.get_mavlink_data();
-    m_input_data = m_input_controller.get_input_data();
+    m_mav_bridge->run();
+    m_mavlink_data = m_mav_bridge->get_mavlink_data();
+    m_input_data = m_input_controller->get_input_data();
     if (m_input_data.new_data) {
         apply_trim(m_input_data);
         if (m_input_data.arm_toggle) {
@@ -31,7 +31,7 @@ void Control::run() {
         }
         if (m_input_data.steering_mode_toggle) {
             m_steering_mode = (m_steering_mode + 1) % NUM_STEERING_MODES;
-            m_pid.reset_pid();
+            m_pid->reset_pid();
         }
         if (m_input_data.drive_mode_toggle) {
             m_drive_mode = (m_drive_mode + 1) % NUM_DRIVE_MODES;
@@ -57,7 +57,7 @@ void Control::run() {
                   Utils::Calcs::map_float(m_mavlink_data.inertial_data.gyro.z, -Config::max_omega,
                     Config::max_omega, Config::min_percentage, Config::max_percentage),
                   Config::min_percentage, Config::max_percentage);
-                pid_output = m_pid.compute(desired_omega, current_omega);
+                pid_output = m_pid->compute(desired_omega, current_omega);
                 m_steering_mixer_data.motor_speed[R] = pid_output;
                 m_steering_mixer_data.motor_speed[L] = pid_output;
                 break;
@@ -112,8 +112,8 @@ void Control::run() {
     }
 
     apply_multiplier(m_steering_mixer_data);
-    m_steering_mixer.run(m_steering_mixer_data);
-    m_wheels_mixer.run(m_wheels_mixer_data);
+    m_steering_mixer->run(m_steering_mixer_data);
+    m_wheels_mixer->run(m_wheels_mixer_data);
     set_telemetry_data();
 }
 
@@ -137,8 +137,8 @@ void Control::set_telemetry_data() {
     m_telemetry_data.acceleration_x = m_mavlink_data.inertial_data.acceleration.x;
     m_telemetry_data.acceleration_y = m_mavlink_data.inertial_data.acceleration.y;
     m_telemetry_data.gyro_z = m_mavlink_data.inertial_data.gyro.z;
-    m_transceiver.set_telemetry_data(m_telemetry_data);
-    m_transceiver.update_data();
+    m_transceiver->set_telemetry_data(m_telemetry_data);
+    m_transceiver->update_data();
 }
 
 void Control::apply_multiplier(SteeringMixerData &steering_mixer_data) {
@@ -197,8 +197,8 @@ void Control::apply_trim(InputControllerData &input_data) {
             m_nvm_data.steering_trim = 0;
         }
     }
-    m_steering_mixer.set_trim(m_nvm_data.steering_mixer_data);
+    m_steering_mixer->set_trim(m_nvm_data.steering_mixer_data);
     if (input_data.write_to_nvm) {
-        m_nvm.set_data(m_nvm_data);
+        m_nvm->set_data(m_nvm_data);
     }
 }

@@ -37,17 +37,17 @@ class Control {
 
    private:
     Chrono m_hb_timer;
-    MavBridge m_mav_bridge;
-    SteeringMixer m_steering_mixer;
-    WheelsMixer m_wheels_mixer;
-    PID m_pid;
-    NVM m_nvm;
-    NVMData m_nvm_data;
-    InputController m_input_controller;
-    Transceiver m_transceiver;
+    MavBridge *m_mav_bridge;
+    SteeringMixer *m_steering_mixer;
+    WheelsMixer *m_wheels_mixer;
+    PID *m_pid;
+    NVM *m_nvm;
+    InputController *m_input_controller;
+    Transceiver *m_transceiver;
 
     void set_telemetry_data();
-    
+
+    NVMData m_nvm_data;
     MavlinkData m_mavlink_data;
     InputControllerData m_input_data;
     SteeringMixerData m_steering_mixer_data;

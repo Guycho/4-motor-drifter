@@ -11,8 +11,10 @@ void ESPNowHandler::init() {
     // Set device as a Wi-Fi Station
     WiFi.mode(WIFI_STA);
 
+    esp_wifi_set_channel(1, WIFI_SECOND_CHAN_NONE);
+
     // Set Wi-Fi to long-range mode
-    esp_wifi_set_protocol(WIFI_IF_STA, WIFI_PROTOCOL_LR);
+    esp_wifi_set_protocol(WIFI_IF_STA, WIFI_PROTOCOL_11B | WIFI_PROTOCOL_11G | WIFI_PROTOCOL_11N | WIFI_PROTOCOL_LR);
 
     // Initialize ESP-NOW
     if (esp_now_init() != ESP_OK) {
@@ -41,6 +43,7 @@ void ESPNowHandler::init() {
 }
 
 void ESPNowHandler::send_data(const String &data) {
+    Serial.println(String(data));
     esp_err_t result = esp_now_send(peerMacAddress, (uint8_t *)data.c_str(), data.length());
 
     if (result == ESP_OK) {
@@ -58,16 +61,8 @@ void ESPNowHandler::on_data_sent(const uint8_t *mac_addr, esp_now_send_status_t 
 }
 
 void ESPNowHandler::on_data_recv(const uint8_t *mac_addr, const uint8_t *data, int data_len) {
-    // Serial.print("Received data from: ");
-    for (int i = 0; i < 6; i++) {
-        Serial.printf("%02x", mac_addr[i]);
-        if (i < 5) Serial.print(":");
-    }
+    Serial.println(String((char *)data));
     m_data = String((char *)data);
-    
-    // Serial.print(" - Data: ");
-    // Serial.write(data, data_len);
-    // Serial.println();
 }
 
 String ESPNowHandler::get_data() { return m_data; }

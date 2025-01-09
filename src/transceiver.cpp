@@ -16,6 +16,7 @@ void Transceiver::update_data() {
     }
     send_data();
     m_remote_data = m_esp_now_handler->get_data();
+    // Serial.println(m_remote_data);
 }
 
 void Transceiver::send_data() {
