@@ -36,7 +36,7 @@ class Control {
     void apply_trim(InputControllerData &input_data);
 
    private:
-    Chrono m_hb_timer;
+
     MavBridge *m_mav_bridge;
     SteeringMixer *m_steering_mixer;
     WheelsMixer *m_wheels_mixer;
@@ -47,6 +47,7 @@ class Control {
 
     void set_telemetry_data();
 
+    Chrono m_hb_timer;
     NVMData m_nvm_data;
     MavlinkData m_mavlink_data;
     InputControllerData m_input_data;

@@ -86,5 +86,8 @@ void setup() {
 }
 
 void loop() {
+    mav_bridge.run();
+    transceiver.update_data();
+    input_controller.get_input_data();
     control.run();
 }

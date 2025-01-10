@@ -21,7 +21,6 @@ void Control::init(const ControlConfig &config) {
 }
 
 void Control::run() {
-    m_mav_bridge->run();
     m_mavlink_data = m_mav_bridge->get_mavlink_data();
     m_input_data = m_input_controller->get_input_data();
     if (m_input_data.new_data) {
@@ -138,7 +137,6 @@ void Control::set_telemetry_data() {
     m_telemetry_data.acceleration_y = m_mavlink_data.inertial_data.acceleration.y;
     m_telemetry_data.gyro_z = m_mavlink_data.inertial_data.gyro.z;
     m_transceiver->set_telemetry_data(m_telemetry_data);
-    m_transceiver->update_data();
 }
 
 void Control::apply_multiplier(SteeringMixerData &steering_mixer_data) {
