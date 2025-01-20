@@ -17,10 +17,10 @@ void SteeringMixer::run(SteeringMixerData &Steering_mixer_data) {
         MotorSpeed motor_speed;
         motor_speed.motor_pin = m_pin[i];
         apply_trim(Steering_mixer_data);
-        float temp_value = Utils::Calcs::map_float(Steering_mixer_data.motor_speed[i],
+        float temp_value = Calcs::map_float(Steering_mixer_data.motor_speed[i],
           Config::min_percentage, Config::max_percentage, m_min_pulse[i], m_max_pulse[i]);
         float final_value =
-          Utils::Calcs::constrain_float(temp_value, m_min_pulse[i], m_max_pulse[i]);
+          Calcs::constrain_float(temp_value, m_min_pulse[i], m_max_pulse[i]);
         motor_speed.motor_value = final_value;
         m_mav_bridge.set_motor_speed(motor_speed);
     }

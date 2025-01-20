@@ -33,12 +33,12 @@ void MavBridge::run() {
             if (msg.msgid == MAVLINK_MSG_ID_ATTITUDE) {
                 mavlink_attitude_t att;
                 mavlink_msg_attitude_decode(&msg, &att);
-                m_mavlink_data.inertial_data.orientation.x = Utils::Calcs::rad_to_deg(att.roll);
-                m_mavlink_data.inertial_data.orientation.y = Utils::Calcs::rad_to_deg(att.pitch);
-                m_mavlink_data.inertial_data.orientation.z = Utils::Calcs::rad_to_deg(att.yaw);
-                m_mavlink_data.inertial_data.gyro.x = Utils::Calcs::rad_to_deg(att.rollspeed);
-                m_mavlink_data.inertial_data.gyro.y = Utils::Calcs::rad_to_deg(att.pitchspeed);
-                m_mavlink_data.inertial_data.gyro.z = Utils::Calcs::rad_to_deg(att.yawspeed);
+                m_mavlink_data.inertial_data.orientation.x = Calcs::rad_to_deg(att.roll);
+                m_mavlink_data.inertial_data.orientation.y = Calcs::rad_to_deg(att.pitch);
+                m_mavlink_data.inertial_data.orientation.z = Calcs::rad_to_deg(att.yaw);
+                m_mavlink_data.inertial_data.gyro.x = Calcs::rad_to_deg(att.rollspeed);
+                m_mavlink_data.inertial_data.gyro.y = Calcs::rad_to_deg(att.pitchspeed);
+                m_mavlink_data.inertial_data.gyro.z = Calcs::rad_to_deg(att.yawspeed);
                 // Serial.println("Attitude");
             } else if (msg.msgid == MAVLINK_MSG_ID_SCALED_IMU) {
                 mavlink_scaled_imu_t imu;

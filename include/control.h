@@ -45,7 +45,6 @@ class Control {
     InputController *m_input_controller;
     Transceiver *m_transceiver;
 
-    void set_telemetry_data();
 
     Chrono m_hb_timer;
     NVMData m_nvm_data;
@@ -53,7 +52,6 @@ class Control {
     InputControllerData m_input_data;
     SteeringMixerData m_steering_mixer_data;
     WheelsMixerData m_wheels_mixer_data;
-    TelemetryData m_telemetry_data;
 
     uint8_t NUM_STEERING_MODES;
     uint8_t NUM_DRIVE_MODES;

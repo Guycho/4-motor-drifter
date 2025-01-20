@@ -52,8 +52,8 @@ void Control::run() {
                 break;
             case GYRO:
                 desired_omega = m_steering;
-                current_omega = Utils::Calcs::constrain_float(
-                  Utils::Calcs::map_float(m_mavlink_data.inertial_data.gyro.z, -Config::max_omega,
+                current_omega = Calcs::constrain_float(
+                  Calcs::map_float(m_mavlink_data.inertial_data.gyro.z, -Config::max_omega,
                     Config::max_omega, Config::min_percentage, Config::max_percentage),
                   Config::min_percentage, Config::max_percentage);
                 pid_output = m_pid->compute(desired_omega, current_omega);
@@ -113,30 +113,6 @@ void Control::run() {
     apply_multiplier(m_steering_mixer_data);
     m_steering_mixer->run(m_steering_mixer_data);
     m_wheels_mixer->run(m_wheels_mixer_data);
-    set_telemetry_data();
-}
-
-void Control::set_telemetry_data() {
-    m_telemetry_data.throttle = m_throttle;
-    m_telemetry_data.steering = m_steering;
-    m_telemetry_data.arm_enabled = m_arm_enabled;
-    m_telemetry_data.steering_mode = m_steering_mode;
-    m_telemetry_data.drive_mode = m_drive_mode;
-    m_telemetry_data.motors_rpm[FR] = m_mavlink_data.four_motor_speed.motor1_rpm;
-    m_telemetry_data.motors_rpm[RR] = m_mavlink_data.four_motor_speed.motor2_rpm;
-    m_telemetry_data.motors_rpm[RL] = m_mavlink_data.four_motor_speed.motor3_rpm;
-    m_telemetry_data.motors_rpm[FL] = m_mavlink_data.four_motor_speed.motor4_rpm;
-    m_telemetry_data.motors_throttle[FR] = m_wheels_mixer_data.motor_speed[FR];
-    m_telemetry_data.motors_throttle[RR] = m_wheels_mixer_data.motor_speed[RR];
-    m_telemetry_data.motors_throttle[RL] = m_wheels_mixer_data.motor_speed[RL];
-    m_telemetry_data.motors_throttle[FL] = m_wheels_mixer_data.motor_speed[FL];
-    m_telemetry_data.battery_voltage = m_mavlink_data.battery_voltage;
-    m_telemetry_data.steering_side[R] = m_steering_mixer_data.motor_speed[R];
-    m_telemetry_data.steering_side[L] = m_steering_mixer_data.motor_speed[L];
-    m_telemetry_data.acceleration_x = m_mavlink_data.inertial_data.acceleration.x;
-    m_telemetry_data.acceleration_y = m_mavlink_data.inertial_data.acceleration.y;
-    m_telemetry_data.gyro_z = m_mavlink_data.inertial_data.gyro.z;
-    m_transceiver->set_telemetry_data(m_telemetry_data);
 }
 
 void Control::apply_multiplier(SteeringMixerData &steering_mixer_data) {
