@@ -15,6 +15,7 @@ const float max_omega = 360; // deg/s
 const float steering_r_l_ratio = 0.1;
 const float trim_increment = 0.01;
 const float cs_ratio = 0.7;
+const uint16_t hb_timeout = 250;
 namespace Transceiver {
 extern const uint16_t update_delay_ms;
 }  // namespace Transceiver

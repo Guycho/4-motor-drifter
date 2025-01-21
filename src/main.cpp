@@ -4,7 +4,6 @@
 #include "control.h"
 #include "input_controller.h"
 #include "mav_bridge.h"
-#include "nvm.h"
 #include "steering_mixer.h"
 #include "transceiver.h"
 #include "wheels_mixer.h"
@@ -16,7 +15,6 @@ MavBridge mav_bridge;
 SteeringMixer steering_mixer;
 WheelsMixer wheels_mixer;
 PID pid;
-NVM nvm;
 Control control;
 
 void setup() {
@@ -69,14 +67,12 @@ void setup() {
     pid_config.use_filters = Config::PIDController::use_filters;
     pid.init(pid_config);
 
-    nvm.init();
 
     ControlConfig control_config;
     control_config.mav_bridge = &mav_bridge;
     control_config.steering_mixer = &steering_mixer;
     control_config.wheels_mixer = &wheels_mixer;
     control_config.pid = &pid;
-    control_config.nvm = &nvm;
     control_config.input_controller = &input_controller;
     control_config.transceiver = &transceiver;
     control.init(control_config);

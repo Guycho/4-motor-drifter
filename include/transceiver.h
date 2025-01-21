@@ -23,6 +23,8 @@ struct RemoteControllerData {
     bool right_trim_l = 0;
     bool right_trim_r = 0;
     bool edge_switch = 0;
+    bool bottom_switch = 0;
+    bool new_data = 0;
 };
 
 struct TransceiverConfig {

@@ -9,10 +9,8 @@ void Control::init(const ControlConfig &config) {
     m_steering_mixer = config.steering_mixer;
     m_wheels_mixer = config.wheels_mixer;
     m_pid = config.pid;
-    m_nvm = config.nvm;
     m_input_controller = config.input_controller;
     m_transceiver = config.transceiver;
-    m_nvm_data = m_nvm->get_data();
     m_arm_enabled = false;
     m_throttle = 0;
     m_steering = 0;
@@ -24,10 +22,7 @@ void Control::run() {
     m_mavlink_data = m_mav_bridge->get_mavlink_data();
     m_input_data = m_input_controller->get_input_data();
     if (m_input_data.new_data) {
-        apply_trim(m_input_data);
-        if (m_input_data.arm_toggle) {
-            m_arm_enabled = !m_arm_enabled;
-        }
+        m_arm_enabled = m_input_data.arm_switch;
         if (m_input_data.steering_mode_toggle) {
             m_steering_mode = (m_steering_mode + 1) % NUM_STEERING_MODES;
             m_pid->reset_pid();
@@ -35,11 +30,16 @@ void Control::run() {
         if (m_input_data.drive_mode_toggle) {
             m_drive_mode = (m_drive_mode + 1) % NUM_DRIVE_MODES;
         }
-        m_steering = m_input_data.steering + m_nvm_data.steering_trim;
-        m_throttle = m_input_data.throttle + m_nvm_data.throttle_trim;
+        m_steering = m_input_data.steering;
+        m_throttle = m_input_data.throttle;
         m_lock_rear_right = m_input_data.lock_rear_right;
         m_lock_rear_left = m_input_data.lock_rear_left;
         m_hb_timer.restart();
+    }
+    if (m_hb_timer.hasPassed(Config::hb_timeout)) {
+        m_arm_enabled = false;
+        m_throttle = 0;
+        m_steering = 0;
     }
     if (m_arm_enabled) {
         float desired_omega = 0.0f;
@@ -123,56 +123,5 @@ void Control::apply_multiplier(SteeringMixerData &steering_mixer_data) {
         steering_mixer_data.motor_speed[L] -= adjustment_value;
     } else {
         steering_mixer_data.motor_speed[R] -= adjustment_value;
-    }
-}
-
-void Control::apply_trim(InputControllerData &input_data) {
-    if (input_data.trim_r) {
-        if (input_data.trim_direction_r) {
-            m_nvm_data.steering_mixer_data.motor_speed[R] += Config::trim_increment;
-        }
-        if (input_data.trim_direction_l) {
-            m_nvm_data.steering_mixer_data.motor_speed[R] -= Config::trim_increment;
-        }
-        if (input_data.reset_trim) {
-            m_nvm_data.steering_mixer_data.motor_speed[R] = 0;
-        }
-    }
-    if (input_data.trim_l) {
-        if (input_data.trim_direction_r) {
-            m_nvm_data.steering_mixer_data.motor_speed[L] += Config::trim_increment;
-        }
-        if (input_data.trim_direction_l) {
-            m_nvm_data.steering_mixer_data.motor_speed[L] -= Config::trim_increment;
-        }
-        if (input_data.reset_trim) {
-            m_nvm_data.steering_mixer_data.motor_speed[L] = 0;
-        }
-    }
-    if (input_data.trim_throttle) {
-        if (input_data.trim_direction_f) {
-            m_nvm_data.throttle_trim += Config::trim_increment;
-        }
-        if (input_data.trim_direction_b) {
-            m_nvm_data.throttle_trim -= Config::trim_increment;
-        }
-        if (input_data.reset_trim) {
-            m_nvm_data.throttle_trim = 0;
-        }
-    }
-    if (input_data.trim_steering) {
-        if (input_data.trim_direction_r) {
-            m_nvm_data.steering_trim += Config::trim_increment;
-        }
-        if (input_data.trim_direction_l) {
-            m_nvm_data.steering_trim -= Config::trim_increment;
-        }
-        if (input_data.reset_trim) {
-            m_nvm_data.steering_trim = 0;
-        }
-    }
-    m_steering_mixer->set_trim(m_nvm_data.steering_mixer_data);
-    if (input_data.write_to_nvm) {
-        m_nvm->set_data(m_nvm_data);
     }
 }

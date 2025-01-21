@@ -6,7 +6,6 @@
 #include "config.h"
 #include "input_controller.h"
 #include "mav_bridge.h"
-#include "nvm.h"
 #include "steering_mixer.h"
 #include "transceiver.h"
 #include "utils.h"
@@ -17,7 +16,6 @@ struct ControlConfig {
     SteeringMixer *steering_mixer;
     WheelsMixer *wheels_mixer;
     PID *pid;
-    NVM *nvm;
     InputController *input_controller;
     Transceiver *transceiver;
 };
@@ -33,7 +31,6 @@ class Control {
     void init(const ControlConfig &config);
     void run();
     void apply_multiplier(SteeringMixerData &steering_mixer_data);
-    void apply_trim(InputControllerData &input_data);
 
    private:
 
@@ -41,13 +38,11 @@ class Control {
     SteeringMixer *m_steering_mixer;
     WheelsMixer *m_wheels_mixer;
     PID *m_pid;
-    NVM *m_nvm;
     InputController *m_input_controller;
     Transceiver *m_transceiver;
 
 
     Chrono m_hb_timer;
-    NVMData m_nvm_data;
     MavlinkData m_mavlink_data;
     InputControllerData m_input_data;
     SteeringMixerData m_steering_mixer_data;
@@ -62,8 +57,6 @@ class Control {
     bool m_arm_enabled = false;
     float m_throttle = 0;
     float m_steering = 0;
-    float m_throttle_trim = 0;
-    float m_steering_trim = 0;
     bool m_lock_rear_right = false;
     bool m_lock_rear_left = false;
 };

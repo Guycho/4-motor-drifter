@@ -61,7 +61,8 @@ RemoteControllerData Transceiver::parse_remote_data(const String& data) {
     remote_data.right_trim_l = (bitmask >> 28) & 0x1;
     remote_data.right_trim_r = (bitmask >> 29) & 0x1;
     remote_data.edge_switch = (bitmask >> 30) & 0x1;
-
+    remote_data.bottom_switch = (bitmask >> 31) & 0x1;
+    remote_data.new_data = true;
     return remote_data;
 }
 
@@ -72,4 +73,8 @@ void Transceiver::send_data() {
     m_esp_now_handler->send_data(json);
 }
 
-RemoteControllerData Transceiver::get_remote_data() { return m_input_controller_data; }
+RemoteControllerData Transceiver::get_remote_data() { 
+    RemoteControllerData remote_data = m_input_controller_data;
+    m_input_controller_data.new_data = false;
+    return remote_data;
+}
