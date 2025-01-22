@@ -16,6 +16,7 @@ const float steering_r_l_ratio = 0.1;
 const float trim_increment = 0.01;
 const float cs_ratio = 0.7;
 const uint16_t hb_timeout = 250;
+const uint8_t arm_led_pin = 16;
 namespace Transceiver {
 extern const uint16_t update_delay_ms;
 }  // namespace Transceiver
@@ -54,10 +55,6 @@ extern const uint8_t component_id;
 extern const uint16_t message_rate;
 extern const uint32_t is_alive_timeout;
 }  // namespace MavlinkBridge
-namespace PS4Controller {
-extern const char *mac;
-extern const float dead_band;
-}  // namespace PS4Controller
 namespace ESPNow {
 extern const uint8_t peer_mac_address[];
 extern const bool use_lr;

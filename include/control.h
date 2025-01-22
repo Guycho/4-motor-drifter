@@ -18,6 +18,7 @@ struct ControlConfig {
     PID *pid;
     InputController *input_controller;
     Transceiver *transceiver;
+    uint8_t arm_led_pin;
 };
 
 class Control {
@@ -47,6 +48,8 @@ class Control {
     InputControllerData m_input_data;
     SteeringMixerData m_steering_mixer_data;
     WheelsMixerData m_wheels_mixer_data;
+
+    uint8_t m_arm_led_pin;
 
     uint8_t NUM_STEERING_MODES;
     uint8_t NUM_DRIVE_MODES;

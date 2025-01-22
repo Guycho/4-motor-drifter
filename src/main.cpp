@@ -77,6 +77,7 @@ void setup() {
     control_config.pid = &pid;
     control_config.input_controller = &input_controller;
     control_config.transceiver = &transceiver;
+    control_config.arm_led_pin = Config::arm_led_pin;
     control.init(control_config);
 
     esp_now_handler.init();

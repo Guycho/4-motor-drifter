@@ -11,11 +11,13 @@ void Control::init(const ControlConfig &config) {
     m_pid = config.pid;
     m_input_controller = config.input_controller;
     m_transceiver = config.transceiver;
+    m_arm_led_pin = config.arm_led_pin;
     m_arm_enabled = false;
     m_throttle = 0;
     m_steering = 0;
     NUM_STEERING_MODES = m_steering_mixer->get_num_of_steering_modes();
     NUM_DRIVE_MODES = m_wheels_mixer->get_num_of_drive_modes();
+    pinMode(m_arm_led_pin, OUTPUT);
 }
 
 void Control::run() {
