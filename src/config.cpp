@@ -1,17 +1,6 @@
 #include "config.h"
 
 namespace Config {
-const uint8_t num_wheels = 4;
-const uint8_t num_steering = 2;
-const float min_percentage = -100.0;
-const float max_percentage = 100.0;
-const float max_omega = 360;  // deg/s
-const float steering_r_l_ratio = 0.1;
-const float trim_increment = 0.01;
-const float cs_ratio = 0.7;
-const uint16_t hb_timeout = 250;
-const uint8_t arm_led_pin = 16;  // change to 2 on updated HW
-
 namespace Transceiver {
 const uint16_t update_delay_ms = 25;
 }

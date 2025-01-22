@@ -81,6 +81,14 @@ void MavBridge::set_messages_rates() {
     set_message_rate(MAVLINK_MSG_ID_BATTERY_STATUS, m_message_rate);
 }
 
+void MavBridge::set_arm_state(bool arm_state){
+    MavMsg m_mav_msg;
+    m_mav_msg.system_id = m_system_id;
+    m_mav_msg.component_id = m_component_id;
+    m_mav_msg.msg_id = MAV_CMD_COMPONENT_ARM_DISARM;
+    m_mav_msg.params[0] = arm_state ? 1 : 0;
+    send_mavlink_message(m_mav_msg);
+}
 void MavBridge::set_message_rate(uint32_t msg_id, uint16_t message_rate_hz) {
     uint32_t interval_us = 1e6 / message_rate_hz;
     MavMsg m_mav_msg;

@@ -62,9 +62,10 @@ class MavBridge {
     void init(const MavBridgeConfig &mav__msg);
     void run();
     void set_motor_speed(MotorSpeed motor_speed);
+    void set_arm_state(bool arm_state);
     MavlinkData get_mavlink_data();
 
-   private:
+private:
     void set_messages_rates();
     void set_message_rate(uint32_t msg_id, uint16_t message_rate_hz);
     void send_mavlink_message(const MavMsg &mav_msg);
@@ -78,6 +79,6 @@ class MavBridge {
 
     Chrono m_is_alive_timer;
     MavlinkData m_mavlink_data;
-};
+    };
 
 #endif  // MAV_BRIDGE_H

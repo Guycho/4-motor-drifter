@@ -50,7 +50,10 @@ void Control::update_mavlink_data() { m_mavlink_data = m_mav_bridge->get_mavlink
 void Control::update_input_data() { m_input_data = m_input_controller->get_input_data(); }
 
 void Control::handle_new_input_data() {
-    m_arm_enabled = m_input_data.arm_switch;
+    if (m_input_data.arm_switch != m_arm_enabled){
+        m_arm_enabled = m_input_data.arm_switch;
+        m_mav_bridge->set_arm_state(m_arm_enabled);
+    }
     if (m_input_data.steering_mode_toggle) {
         m_steering_mode = (m_steering_mode + 1) % NUM_STEERING_MODES;
         m_pid->reset_pid();
@@ -67,6 +70,7 @@ void Control::handle_new_input_data() {
 
 void Control::handle_heartbeat_timeout() {
     m_arm_enabled = false;
+    m_mav_bridge->set_arm_state(false);
     m_throttle = 0;
     m_steering = 0;
 }
@@ -132,10 +136,10 @@ void Control::handle_drive_mode() {
 
 void Control::handle_locks() {
     if (m_lock_rear_right) {
-        m_wheels_mixer_data.motor_speed[RR] = Config::min_percentage;
+        m_wheels_mixer_data.motor_speed[RR] = 0;
     }
     if (m_lock_rear_left) {
-        m_wheels_mixer_data.motor_speed[RL] = Config::min_percentage;
+        m_wheels_mixer_data.motor_speed[RL] = 0;
     }
 }
 
