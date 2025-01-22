@@ -6,6 +6,7 @@
 
 struct WheelsMixerConfig {
     MavBridge *mav_bridge;
+    float deadband;
     uint8_t pin[Config::num_wheels];
     uint16_t min_pulse[Config::num_wheels];
     uint16_t max_pulse[Config::num_wheels];
@@ -33,6 +34,7 @@ class WheelsMixer {
    private:
     MavBridge m_mav_bridge;
     WheelsMixerData m_wheels_mixer_data;
+    float m_deadband;
     uint8_t m_pin[Config::num_wheels];
     uint16_t m_min_pulse[Config::num_wheels];
     uint16_t m_max_pulse[Config::num_wheels];

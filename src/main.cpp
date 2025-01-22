@@ -8,7 +8,7 @@
 #include "transceiver.h"
 #include "wheels_mixer.h"
 
-ESPNowHandler esp_now_handler(Config::ESPNow::peer_mac_address);
+ESPNowHandler esp_now_handler(Config::ESPNow::peer_mac_address, Config::ESPNow::use_lr, Config::ESPNow::print_debug);
 Transceiver transceiver;
 InputController input_controller;
 MavBridge mav_bridge;
@@ -40,6 +40,7 @@ void setup() {
 
     SteeringMixerConfig steering_config;
     steering_config.mav_bridge = &mav_bridge;
+    steering_config.deadband = Config::Motor::deadband;
     for (int i = 0; i < Config::num_steering; i++) {
         steering_config.pin[i] = Config::Motor::Steering::pin[i];
         steering_config.min_pulse[i] = Config::Motor::Steering::min_pulse[i];
@@ -49,6 +50,7 @@ void setup() {
 
     WheelsMixerConfig wheels_config;
     wheels_config.mav_bridge = &mav_bridge;
+    wheels_config.deadband = Config::Motor::deadband;
     for (int i = 0; i < Config::num_wheels; i++) {
         wheels_config.pin[i] = Config::Motor::Wheel::pin[i];
         wheels_config.min_pulse[i] = Config::Motor::Wheel::min_pulse[i];
@@ -80,10 +82,28 @@ void setup() {
     esp_now_handler.init();
 
 }
-
+uint32_t last_time = 0;
 void loop() {
     mav_bridge.run();
     transceiver.update_data();
-    input_controller.get_input_data();
     control.run();
+    if (millis() - last_time > 1000) {
+        Serial.println();
+        last_time = millis();
+        WheelsMixerData wheels_data = wheels_mixer.get_wheels_data();
+        Serial.print("FR: ");
+        Serial.print(wheels_data.motor_speed[FR]);
+        Serial.print(" RR: ");
+        Serial.print(wheels_data.motor_speed[RR]);
+        Serial.print(" RL: ");
+        Serial.print(wheels_data.motor_speed[RL]);
+        Serial.print(" FL: ");
+        Serial.print(wheels_data.motor_speed[FL]);
+        SteeringMixerData steering_data = steering_mixer.get_steering_data();
+        Serial.print(" R: ");
+        Serial.print(steering_data.motor_speed[R]);
+        Serial.print(" L: ");
+        Serial.print(steering_data.motor_speed[L]);
+        
+    }
 }

@@ -2,8 +2,9 @@
 #define TRANSCEIVER_H
 
 #include <ArduinoJson.h>
-#include <WiFi.h>
 #include <Chrono.h>
+#include <WiFi.h>
+
 #include "ESP_now_handler.h"
 #include "config.h"
 
@@ -48,7 +49,7 @@ class Transceiver {
     Chrono m_data_timer;
     ESPNowHandler *m_esp_now_handler;
 
-    RemoteControllerData m_input_controller_data;
+    RemoteControllerData m_remote_controller_data;
     String m_remote_data;
     uint16_t m_update_delay_ms;
 };

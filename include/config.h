@@ -20,6 +20,7 @@ namespace Transceiver {
 extern const uint16_t update_delay_ms;
 }  // namespace Transceiver
 namespace Motor {
+extern const float deadband;
 namespace Wheel {
 extern const uint8_t pin[];
 extern const uint16_t min_pulse[];
@@ -59,6 +60,8 @@ extern const float dead_band;
 }  // namespace PS4Controller
 namespace ESPNow {
 extern const uint8_t peer_mac_address[];
+extern const bool use_lr;
+extern const bool print_debug;
 }  // namespace ESPNow
 }  // namespace Config
 #endif  // CONFIG_H

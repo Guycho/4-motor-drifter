@@ -2,9 +2,10 @@
 
 namespace Config {
 namespace Transceiver {
-const uint16_t update_delay_ms = 100;
+const uint16_t update_delay_ms = 25;
 }  // namespace Server
 namespace Motor {
+const float deadband = 1.0;
 namespace Wheel {
 const uint8_t pin[num_wheels] = {1, 2, 3, 4};
 const uint16_t min_pulse[num_wheels] = {1000, 1000, 1000, 1000};
@@ -40,5 +41,7 @@ const float dead_band = 5;
 }  // namespace PS4Controller
 namespace ESPNow {
 const uint8_t peer_mac_address[] = {0xA0, 0xDD, 0x6C, 0x03, 0x9E, 0x40};
+const bool use_lr = true;
+const bool print_debug = false;
 }  // namespace ESPNow
 }  // namespace Config
