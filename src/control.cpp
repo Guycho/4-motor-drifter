@@ -23,8 +23,9 @@ void Control::init(const ControlConfig &config) {
 void Control::run() {
     m_mavlink_data = m_mav_bridge->get_mavlink_data();
     m_input_data = m_input_controller->get_input_data();
+    bool temp_arm = m_arm_enabled;
     if (m_input_data.new_data) {
-        m_arm_enabled = m_input_data.arm_switch;
+        temp_arm = m_input_data.arm_switch;
         if (m_input_data.steering_mode_toggle) {
             m_steering_mode = (m_steering_mode + 1) % NUM_STEERING_MODES;
             m_pid->reset_pid();
@@ -39,10 +40,15 @@ void Control::run() {
         m_hb_timer.restart();
     }
     if (m_hb_timer.hasPassed(Config::hb_timeout)) {
-        m_arm_enabled = false;
+        temp_arm = false;
         m_throttle = 0;
         m_steering = 0;
     }
+    if (temp_arm != m_arm_enabled) {
+        m_arm_enabled = temp_arm;
+        digitalWrite(m_arm_led_pin, m_arm_enabled);
+        }
+
     if (m_arm_enabled) {
         float desired_omega = 0.0f;
         float pid_output = 0.0f;

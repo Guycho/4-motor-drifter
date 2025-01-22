@@ -83,28 +83,8 @@ void setup() {
     esp_now_handler.init();
 
 }
-uint32_t last_time = 0;
 void loop() {
     mav_bridge.run();
     transceiver.update_data();
     control.run();
-    if (millis() - last_time > 1000) {
-        Serial.println();
-        last_time = millis();
-        WheelsMixerData wheels_data = wheels_mixer.get_wheels_data();
-        Serial.print("FR: ");
-        Serial.print(wheels_data.motor_speed[FR]);
-        Serial.print(" RR: ");
-        Serial.print(wheels_data.motor_speed[RR]);
-        Serial.print(" RL: ");
-        Serial.print(wheels_data.motor_speed[RL]);
-        Serial.print(" FL: ");
-        Serial.print(wheels_data.motor_speed[FL]);
-        SteeringMixerData steering_data = steering_mixer.get_steering_data();
-        Serial.print(" R: ");
-        Serial.print(steering_data.motor_speed[R]);
-        Serial.print(" L: ");
-        Serial.print(steering_data.motor_speed[L]);
-        
-    }
 }
