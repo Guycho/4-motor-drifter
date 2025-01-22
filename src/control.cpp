@@ -21,106 +21,131 @@ void Control::init(const ControlConfig &config) {
 }
 
 void Control::run() {
-    m_mavlink_data = m_mav_bridge->get_mavlink_data();
-    m_input_data = m_input_controller->get_input_data();
-    bool temp_arm = m_arm_enabled;
+    update_mavlink_data();
+    update_input_data();
+
     if (m_input_data.new_data) {
-        temp_arm = m_input_data.arm_switch;
-        if (m_input_data.steering_mode_toggle) {
-            m_steering_mode = (m_steering_mode + 1) % NUM_STEERING_MODES;
-            m_pid->reset_pid();
-        }
-        if (m_input_data.drive_mode_toggle) {
-            m_drive_mode = (m_drive_mode + 1) % NUM_DRIVE_MODES;
-        }
-        m_steering = m_input_data.steering;
-        m_throttle = m_input_data.throttle;
-        m_lock_rear_right = m_input_data.lock_rear_right;
-        m_lock_rear_left = m_input_data.lock_rear_left;
-        m_hb_timer.restart();
+        handle_new_input_data();
     }
+
     if (m_hb_timer.hasPassed(Config::hb_timeout)) {
-        temp_arm = false;
-        m_throttle = 0;
-        m_steering = 0;
+        handle_heartbeat_timeout();
     }
-    if (temp_arm != m_arm_enabled) {
-        m_arm_enabled = temp_arm;
-        digitalWrite(m_arm_led_pin, m_arm_enabled);
-        }
 
     if (m_arm_enabled) {
-        float desired_omega = 0.0f;
-        float pid_output = 0.0f;
-        float current_omega = 0.0f;
-        switch (m_steering_mode) {
-            case NORMAL:
-                m_steering_mixer_data.motor_speed[R] = m_steering;
-                m_steering_mixer_data.motor_speed[L] = m_steering;
-                break;
-            case GYRO:
-                desired_omega = m_steering;
-                current_omega = Calcs::constrain_float(
-                  Calcs::map_float(m_mavlink_data.inertial_data.gyro.z, -Config::max_omega,
-                    Config::max_omega, Config::min_percentage, Config::max_percentage),
-                  Config::min_percentage, Config::max_percentage);
-                pid_output = m_pid->compute(desired_omega, current_omega);
-                m_steering_mixer_data.motor_speed[R] = pid_output;
-                m_steering_mixer_data.motor_speed[L] = pid_output;
-                break;
-            default:
-                m_steering_mixer_data.motor_speed[R] = 0;
-                m_steering_mixer_data.motor_speed[L] = 0;
-                break;
-        }
-        uint8_t current_drive_mode = m_drive_mode;
-        if (m_throttle < 0) {
-            current_drive_mode = AWD;
-        }
-        switch (current_drive_mode) {
-            case AWD:
-                m_wheels_mixer_data.motor_speed[FR] = m_throttle;
-                m_wheels_mixer_data.motor_speed[RR] = m_throttle;
-                m_wheels_mixer_data.motor_speed[RL] = m_throttle;
-                m_wheels_mixer_data.motor_speed[FL] = m_throttle;
-                break;
-            case CS:
-                m_wheels_mixer_data.motor_speed[FR] = m_throttle * Config::cs_ratio;
-                m_wheels_mixer_data.motor_speed[RR] = m_throttle;
-                m_wheels_mixer_data.motor_speed[RL] = m_throttle;
-                m_wheels_mixer_data.motor_speed[FL] = m_throttle * Config::cs_ratio;
-                break;
-            case RWD:
-                m_wheels_mixer_data.motor_speed[FR] = 0;
-                m_wheels_mixer_data.motor_speed[RR] = m_throttle;
-                m_wheels_mixer_data.motor_speed[RL] = m_throttle;
-                m_wheels_mixer_data.motor_speed[FL] = 0;
-                break;
-            default:
-                m_wheels_mixer_data.motor_speed[FR] = 0;
-                m_wheels_mixer_data.motor_speed[RR] = 0;
-                m_wheels_mixer_data.motor_speed[RL] = 0;
-                m_wheels_mixer_data.motor_speed[FL] = 0;
-                break;
-        }
-        if (m_lock_rear_right) {
-            m_wheels_mixer_data.motor_speed[RR] = Config::min_percentage;
-        }
-        if (m_lock_rear_left) {
-            m_wheels_mixer_data.motor_speed[RL] = Config::min_percentage;
-        }
+        handle_steering_mode();
+        handle_drive_mode();
+        handle_locks();
     } else {
-        m_steering_mixer_data.motor_speed[R] = 0;
-        m_steering_mixer_data.motor_speed[L] = 0;
-        m_wheels_mixer_data.motor_speed[FR] = 0;
-        m_wheels_mixer_data.motor_speed[RR] = 0;
-        m_wheels_mixer_data.motor_speed[RL] = 0;
-        m_wheels_mixer_data.motor_speed[FL] = 0;
+        disable_motors();
     }
-
+    digitalWrite(m_arm_led_pin, m_arm_enabled);
     apply_multiplier(m_steering_mixer_data);
     m_steering_mixer->run(m_steering_mixer_data);
     m_wheels_mixer->run(m_wheels_mixer_data);
+}
+
+void Control::update_mavlink_data() { m_mavlink_data = m_mav_bridge->get_mavlink_data(); }
+
+void Control::update_input_data() { m_input_data = m_input_controller->get_input_data(); }
+
+void Control::handle_new_input_data() {
+    m_arm_enabled = m_input_data.arm_switch;
+    if (m_input_data.steering_mode_toggle) {
+        m_steering_mode = (m_steering_mode + 1) % NUM_STEERING_MODES;
+        m_pid->reset_pid();
+    }
+    if (m_input_data.drive_mode_toggle) {
+        m_drive_mode = (m_drive_mode + 1) % NUM_DRIVE_MODES;
+    }
+    m_steering = m_input_data.steering;
+    m_throttle = m_input_data.throttle;
+    m_lock_rear_right = m_input_data.lock_rear_right || m_steering == Config::max_percentage;
+    m_lock_rear_left = m_input_data.lock_rear_left || m_steering == Config::min_percentage;
+    m_hb_timer.restart();
+}
+
+void Control::handle_heartbeat_timeout() {
+    m_arm_enabled = false;
+    m_throttle = 0;
+    m_steering = 0;
+}
+
+void Control::handle_steering_mode() {
+    float desired_omega = 0.0f;
+    float pid_output = 0.0f;
+    float current_omega = 0.0f;
+    switch (m_steering_mode) {
+        case NORMAL:
+            m_steering_mixer_data.motor_speed[R] = m_steering;
+            m_steering_mixer_data.motor_speed[L] = m_steering;
+            break;
+        case GYRO:
+            desired_omega = m_steering;
+            current_omega = Calcs::constrain_float(
+              Calcs::map_float(m_mavlink_data.inertial_data.gyro.z, -Config::max_omega,
+                Config::max_omega, Config::min_percentage, Config::max_percentage),
+              Config::min_percentage, Config::max_percentage);
+            pid_output = m_pid->compute(desired_omega, current_omega);
+            m_steering_mixer_data.motor_speed[R] = pid_output;
+            m_steering_mixer_data.motor_speed[L] = pid_output;
+            break;
+        default:
+            m_steering_mixer_data.motor_speed[R] = 0;
+            m_steering_mixer_data.motor_speed[L] = 0;
+            break;
+    }
+}
+
+void Control::handle_drive_mode() {
+    uint8_t current_drive_mode = m_drive_mode;
+    if (m_throttle < 0) {
+        current_drive_mode = AWD;
+    }
+    switch (current_drive_mode) {
+        case AWD:
+            m_wheels_mixer_data.motor_speed[FR] = m_throttle;
+            m_wheels_mixer_data.motor_speed[RR] = m_throttle;
+            m_wheels_mixer_data.motor_speed[RL] = m_throttle;
+            m_wheels_mixer_data.motor_speed[FL] = m_throttle;
+            break;
+        case CS:
+            m_wheels_mixer_data.motor_speed[FR] = m_throttle * Config::cs_ratio;
+            m_wheels_mixer_data.motor_speed[RR] = m_throttle;
+            m_wheels_mixer_data.motor_speed[RL] = m_throttle;
+            m_wheels_mixer_data.motor_speed[FL] = m_throttle * Config::cs_ratio;
+            break;
+        case RWD:
+            m_wheels_mixer_data.motor_speed[FR] = 0;
+            m_wheels_mixer_data.motor_speed[RR] = m_throttle;
+            m_wheels_mixer_data.motor_speed[RL] = m_throttle;
+            m_wheels_mixer_data.motor_speed[FL] = 0;
+            break;
+        default:
+            m_wheels_mixer_data.motor_speed[FR] = 0;
+            m_wheels_mixer_data.motor_speed[RR] = 0;
+            m_wheels_mixer_data.motor_speed[RL] = 0;
+            m_wheels_mixer_data.motor_speed[FL] = 0;
+            break;
+    }
+}
+
+void Control::handle_locks() {
+    if (m_lock_rear_right) {
+        m_wheels_mixer_data.motor_speed[RR] = Config::min_percentage;
+    }
+    if (m_lock_rear_left) {
+        m_wheels_mixer_data.motor_speed[RL] = Config::min_percentage;
+    }
+}
+
+void Control::disable_motors() {
+    m_steering_mixer_data.motor_speed[R] = 0;
+    m_steering_mixer_data.motor_speed[L] = 0;
+    m_wheels_mixer_data.motor_speed[FR] = 0;
+    m_wheels_mixer_data.motor_speed[RR] = 0;
+    m_wheels_mixer_data.motor_speed[RL] = 0;
+    m_wheels_mixer_data.motor_speed[FL] = 0;
 }
 
 void Control::apply_multiplier(SteeringMixerData &steering_mixer_data) {

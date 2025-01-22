@@ -1,5 +1,6 @@
 #ifndef CONTROL_H
 #define CONTROL_H
+
 #include <Chrono.h>
 
 #include "PID.h"
@@ -34,6 +35,14 @@ class Control {
     void apply_multiplier(SteeringMixerData &steering_mixer_data);
 
    private:
+    void update_mavlink_data();
+    void update_input_data();
+    void handle_new_input_data();
+    void handle_heartbeat_timeout();
+    void handle_steering_mode();
+    void handle_drive_mode();
+    void handle_locks();
+    void disable_motors();
 
     MavBridge *m_mav_bridge;
     SteeringMixer *m_steering_mixer;
@@ -41,7 +50,6 @@ class Control {
     PID *m_pid;
     InputController *m_input_controller;
     Transceiver *m_transceiver;
-
 
     Chrono m_hb_timer;
     MavlinkData m_mavlink_data;
@@ -57,11 +65,11 @@ class Control {
     uint8_t m_steering_mode;
     uint8_t m_drive_mode;
 
-    bool m_arm_enabled = false;
-    float m_throttle = 0;
-    float m_steering = 0;
-    bool m_lock_rear_right = false;
-    bool m_lock_rear_left = false;
+    bool m_arm_enabled;
+    float m_throttle;
+    float m_steering;
+    bool m_lock_rear_right;
+    bool m_lock_rear_left;
 };
 
 #endif  // CONTROL_H
