@@ -1,33 +1,25 @@
 #ifndef CONTROL_H
 #define CONTROL_H
+
 #include <Chrono.h>
 
+#include "PID.h"
 #include "config.h"
-#include "input.h"
+#include "input_controller.h"
 #include "mav_bridge.h"
 #include "steering_mixer.h"
+#include "transceiver.h"
 #include "utils.h"
-#include "PID.h"
 #include "wheels_mixer.h"
-#include "nvm.h"
 
 struct ControlConfig {
     MavBridge *mav_bridge;
     SteeringMixer *steering_mixer;
     WheelsMixer *wheels_mixer;
     PID *pid;
-    NVM *nvm;
-};
-
-struct ControlPrintData {
-    float throttle;
-    float steering;
-    bool arm_enabled;
-    uint8_t steering_mode;
-    uint8_t drive_mode;
-    WheelsMixerData wheels_mixer_data;
-    SteeringMixerData steering_mixer_data;
-    MavlinkData mavlink_data;
+    InputController *input_controller;
+    Transceiver *transceiver;
+    uint8_t arm_led_pin;
 };
 
 class Control {
@@ -41,19 +33,31 @@ class Control {
     void init(const ControlConfig &config);
     void run();
     void apply_multiplier(SteeringMixerData &steering_mixer_data);
-    void apply_trim(InputControllerData &input_data);
-    ControlPrintData get_print_data();
 
    private:
-    Chrono m_hb_timer;
+    void update_mavlink_data();
+    void update_input_data();
+    void handle_new_input_data();
+    void handle_heartbeat_timeout();
+    void handle_steering_mode();
+    void handle_drive_mode();
+    void handle_locks();
+    void disable_motors();
 
-    MavBridge m_mav_bridge;
-    SteeringMixer m_steering_mixer;
-    WheelsMixer m_wheels_mixer;
-    PID m_pid;
-    NVM m_nvm;
-    ControlPrintData m_print_data;
-    NVMData m_nvm_data;    
+    MavBridge *m_mav_bridge;
+    SteeringMixer *m_steering_mixer;
+    WheelsMixer *m_wheels_mixer;
+    PID *m_pid;
+    InputController *m_input_controller;
+    Transceiver *m_transceiver;
+
+    Chrono m_hb_timer;
+    MavlinkData m_mavlink_data;
+    InputControllerData m_input_data;
+    SteeringMixerData m_steering_mixer_data;
+    WheelsMixerData m_wheels_mixer_data;
+
+    uint8_t m_arm_led_pin;
 
     uint8_t NUM_STEERING_MODES;
     uint8_t NUM_DRIVE_MODES;
@@ -61,13 +65,11 @@ class Control {
     uint8_t m_steering_mode;
     uint8_t m_drive_mode;
 
-    bool m_arm_enabled = false;
-    float m_throttle = 0;
-    float m_steering = 0;
-    float m_throttle_trim = 0;
-    float m_steering_trim = 0;
-    bool m_lock_rear_right = false;
-    bool m_lock_rear_left = false;
+    bool m_arm_enabled;
+    float m_throttle;
+    float m_steering;
+    bool m_lock_rear_right;
+    bool m_lock_rear_left;
 };
 
 #endif  // CONTROL_H
