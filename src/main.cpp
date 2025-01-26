@@ -1,4 +1,7 @@
-#include "ESP_now_handler.h"
+#include <ESP_now_handler.h>
+#include <OTAHandler.h>
+#include <TelnetStream.h>
+
 #include "PID.h"
 #include "config.h"
 #include "control.h"
@@ -16,6 +19,9 @@ SteeringMixer steering_mixer;
 WheelsMixer wheels_mixer;
 PID pid;
 Control control;
+OTAHandler ota_handler(Config::OTAHandler::hostname, Config::OTAHandler::credentials,
+  Config::OTAHandler::num_networks, Config::OTAHandler::timeout_sec,
+  Config::OTAHandler::print_debug);
 
 void setup() {
     Serial.begin(9600);
@@ -82,10 +88,14 @@ void setup() {
 
     esp_now_handler.init();
 
+    ota_handler.init();
+
+    TelnetStream.begin();
 }
 
 void loop() {
     mav_bridge.run();
     transceiver.update_data();
     control.run();
+    ota_handler.run();
 }

@@ -44,4 +44,10 @@ const uint8_t peer_mac_address[] = {0xA0, 0xDD, 0x6C, 0x03, 0x9E, 0x40};
 const bool use_lr = true;
 const bool print_debug = false;
 }  // namespace ESPNow
+namespace OTAHandler {
+const char *credentials[num_networks][2] = {{WIFI_SSID1, WIFI_PASSWORD2},
+  {WIFI_SSID2, WIFI_PASSWORD2}, {WIFI_SSID3, WIFI_PASSWORD3}};
+const char *hostname = "CarOTA";
+}  // namespace OTAHandler
+
 }  // namespace Config
