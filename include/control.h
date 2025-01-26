@@ -65,11 +65,13 @@ class Control {
     uint8_t m_steering_mode;
     uint8_t m_drive_mode;
 
-    bool m_arm_enabled;
-    float m_throttle;
-    float m_steering;
-    bool m_lock_rear_right;
-    bool m_lock_rear_left;
+    bool m_ready_to_arm = false;
+    bool m_was_safe = false;
+    bool m_arm_enabled = false;
+    float m_throttle = 0;
+    float m_steering = 0;
+    bool m_lock_rear_right = false;
+    bool m_lock_rear_left = false;
 };
 
 #endif  // CONTROL_H

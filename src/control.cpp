@@ -50,8 +50,10 @@ void Control::update_mavlink_data() { m_mavlink_data = m_mav_bridge->get_mavlink
 void Control::update_input_data() { m_input_data = m_input_controller->get_input_data(); }
 
 void Control::handle_new_input_data() {
+    m_was_safe = !m_input_data.arm_switch ? true : m_was_safe;
+    m_ready_to_arm = m_was_safe && m_input_data.throttle == 0 && m_input_data.steering == 0;
     if (m_input_data.arm_switch != m_arm_enabled){
-        m_arm_enabled = m_input_data.arm_switch;
+        m_arm_enabled = m_input_data.arm_switch && m_ready_to_arm;
         m_mav_bridge->set_arm_state(m_arm_enabled);
     }
     if (m_input_data.steering_mode_toggle) {
