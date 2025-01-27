@@ -36,12 +36,12 @@ const uint32_t baudrate = 2000000;
 const uint8_t system_id = 1;
 const uint8_t component_id = 0;
 const uint16_t message_rate = 100;
-const uint32_t is_alive_timeout = 2500;
+const uint16_t is_alive_timeout = 2500;
 }  // namespace MavlinkBridge
 
 namespace ESPNow {
 const uint8_t peer_mac_address[] = {0xA0, 0xDD, 0x6C, 0x03, 0x9E, 0x40};
-const bool use_lr = false;
+const bool use_lr = true;
 const bool print_debug = false;
 }  // namespace ESPNow
 namespace OTAHandler {

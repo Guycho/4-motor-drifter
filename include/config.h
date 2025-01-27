@@ -15,7 +15,7 @@ const float max_omega = 360;  // deg/s
 const float steering_r_l_ratio = 0.1;
 const float trim_increment = 0.01;
 const float cs_ratio = 0.7;
-const uint16_t hb_timeout = 250;
+const uint16_t hb_timeout = 2500;
 const uint8_t arm_led_pin = 2;
 
 namespace Transceiver {
@@ -53,7 +53,7 @@ extern const uint32_t baudrate;
 extern const uint8_t system_id;
 extern const uint8_t component_id;
 extern const uint16_t message_rate;
-extern const uint32_t is_alive_timeout;
+extern const uint16_t is_alive_timeout;
 }  // namespace MavlinkBridge
 
 namespace ESPNow {
