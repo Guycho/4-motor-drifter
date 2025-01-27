@@ -41,7 +41,7 @@ const uint32_t is_alive_timeout = 2500;
 
 namespace ESPNow {
 const uint8_t peer_mac_address[] = {0xA0, 0xDD, 0x6C, 0x03, 0x9E, 0x40};
-const bool use_lr = true;
+const bool use_lr = false;
 const bool print_debug = false;
 }  // namespace ESPNow
 namespace OTAHandler {

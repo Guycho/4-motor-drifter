@@ -12,7 +12,7 @@ struct MavBridgeConfig {
     uint8_t system_id;
     uint8_t component_id;
     uint8_t message_rate;
-    uint32_t is_alive_timeout;
+    uint16_t is_alive_timeout;
 };
 
 struct Vector3D {
