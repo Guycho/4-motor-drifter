@@ -16,7 +16,7 @@ const float steering_r_l_ratio = 0.1;
 const float trim_increment = 0.01;
 const float cs_ratio = 0.7;
 const uint16_t hb_timeout = 250;
-const uint8_t arm_led_pin = 2;  // change to 2 on updated HW
+const uint8_t arm_led_pin = 2;
 
 namespace Transceiver {
 extern const uint16_t update_delay_ms;

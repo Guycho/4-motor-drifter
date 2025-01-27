@@ -26,27 +26,22 @@ OTAHandler ota_handler(Config::OTAHandler::hostname, Config::OTAHandler::credent
 void setup() {
     Serial.begin(9600);
 
-    TransceiverConfig transceiver_config;
-    transceiver_config.update_delay_ms = Config::Transceiver::update_delay_ms;
-    transceiver_config.esp_now_handler = &esp_now_handler;
+    TransceiverConfig transceiver_config = {.update_delay_ms = Config::Transceiver::update_delay_ms,
+                                            .esp_now_handler = &esp_now_handler};
     transceiver.init(transceiver_config);
 
-    InputControllerConfig input_controller_config;
-    input_controller_config.transceiver = &transceiver;
+    InputControllerConfig input_controller_config = {.transceiver = &transceiver};
     input_controller.init(input_controller_config);
 
-    MavBridgeConfig mav_config;
-    mav_config.serial = Config::MavlinkBridge::serial;
-    mav_config.baudrate = Config::MavlinkBridge::baudrate;
-    mav_config.system_id = Config::MavlinkBridge::system_id;
-    mav_config.component_id = Config::MavlinkBridge::component_id;
-    mav_config.message_rate = Config::MavlinkBridge::message_rate;
-    mav_config.is_alive_timeout = Config::MavlinkBridge::is_alive_timeout;
+    MavBridgeConfig mav_config = {.serial = Config::MavlinkBridge::serial,
+                                  .baudrate = Config::MavlinkBridge::baudrate,
+                                  .system_id = Config::MavlinkBridge::system_id,
+                                  .component_id = Config::MavlinkBridge::component_id,
+                                  .message_rate = Config::MavlinkBridge::message_rate,
+                                  .is_alive_timeout = Config::MavlinkBridge::is_alive_timeout};
     mav_bridge.init(mav_config);
 
-    SteeringMixerConfig steering_config;
-    steering_config.mav_bridge = &mav_bridge;
-    steering_config.deadband = Config::Motor::deadband;
+    SteeringMixerConfig steering_config = {.mav_bridge = &mav_bridge, .deadband = Config::Motor::deadband};
     for (int i = 0; i < Config::num_steering; i++) {
         steering_config.pin[i] = Config::Motor::Steering::pin[i];
         steering_config.min_pulse[i] = Config::Motor::Steering::min_pulse[i];
@@ -54,9 +49,7 @@ void setup() {
     }
     steering_mixer.init(steering_config);
 
-    WheelsMixerConfig wheels_config;
-    wheels_config.mav_bridge = &mav_bridge;
-    wheels_config.deadband = Config::Motor::deadband;
+    WheelsMixerConfig wheels_config = {.mav_bridge = &mav_bridge, .deadband = Config::Motor::deadband};
     for (int i = 0; i < Config::num_wheels; i++) {
         wheels_config.pin[i] = Config::Motor::Wheel::pin[i];
         wheels_config.min_pulse[i] = Config::Motor::Wheel::min_pulse[i];
@@ -64,26 +57,23 @@ void setup() {
     }
     wheels_mixer.init(wheels_config);
 
-    PIDConfig pid_config;
-    pid_config.kp = Config::PIDController::kp;
-    pid_config.ki = Config::PIDController::ki;
-    pid_config.kd = Config::PIDController::kd;
-    pid_config.max_output = Config::PIDController::max_output;
-    pid_config.integral_percentage = Config::PIDController::integral_percentage;
-    pid_config.low_pass_alpha = Config::PIDController::low_pass_alpha;
-    pid_config.high_Pass_alpha = Config::PIDController::high_Pass_alpha;
-    pid_config.use_filters = Config::PIDController::use_filters;
+    PIDConfig pid_config = {.kp = Config::PIDController::kp,
+                            .ki = Config::PIDController::ki,
+                            .kd = Config::PIDController::kd,
+                            .max_output = Config::PIDController::max_output,
+                            .integral_percentage = Config::PIDController::integral_percentage,
+                            .low_pass_alpha = Config::PIDController::low_pass_alpha,
+                            .high_Pass_alpha = Config::PIDController::high_Pass_alpha,
+                            .use_filters = Config::PIDController::use_filters};
     pid.init(pid_config);
 
-
-    ControlConfig control_config;
-    control_config.mav_bridge = &mav_bridge;
-    control_config.steering_mixer = &steering_mixer;
-    control_config.wheels_mixer = &wheels_mixer;
-    control_config.pid = &pid;
-    control_config.input_controller = &input_controller;
-    control_config.transceiver = &transceiver;
-    control_config.arm_led_pin = Config::arm_led_pin;
+    ControlConfig control_config = {.mav_bridge = &mav_bridge,
+                                    .steering_mixer = &steering_mixer,
+                                    .wheels_mixer = &wheels_mixer,
+                                    .pid = &pid,
+                                    .input_controller = &input_controller,
+                                    .transceiver = &transceiver,
+                                    .arm_led_pin = Config::arm_led_pin};
     control.init(control_config);
 
     esp_now_handler.init();
