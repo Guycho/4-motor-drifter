@@ -28,6 +28,13 @@ struct RemoteControllerData {
     bool new_data = 0;
 };
 
+struct DataToSend {
+    bool arm_state;
+    uint8_t steering_mode;
+    uint8_t drive_mode;
+    uint8_t battery_status;
+};
+
 struct TransceiverConfig {
     uint16_t update_delay_ms;
     ESPNowHandler *esp_now_handler;
@@ -39,8 +46,9 @@ class Transceiver {
     ~Transceiver();
 
     void init(const TransceiverConfig &config);
-    void update_data();
+    void run();
     RemoteControllerData get_remote_data();
+    void set_data_to_send(const DataToSend &data);
 
    private:
     void send_data();
@@ -50,6 +58,7 @@ class Transceiver {
     ESPNowHandler *m_esp_now_handler;
 
     RemoteControllerData m_remote_controller_data;
+    DataToSend m_data_to_send;
     String m_remote_data;
     uint16_t m_update_delay_ms;
 };

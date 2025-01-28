@@ -67,6 +67,7 @@ void Control::handle_battery_status() {
         m_battery_ok = true;
     }
 }
+
 void Control::handle_new_input_data() {
     m_was_safe = !m_input_data.arm_switch ? true : m_was_safe;
     m_ready_to_arm =

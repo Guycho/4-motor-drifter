@@ -10,17 +10,26 @@ void Transceiver::init(const TransceiverConfig& config) {
     m_data_timer.start();
 }
 
-void Transceiver::update_data() {
+void Transceiver::run() {
     if (!m_data_timer.hasPassed(m_update_delay_ms, true)) {
         return;
     }
     m_remote_data = m_esp_now_handler->get_data();
-    if (m_remote_data.length() == 0 || !verify_checksum(m_remote_data)) {
-        return;
+    if (!(m_remote_data.length() == 0 || !verify_checksum(m_remote_data))) {
+        m_remote_controller_data = parse_remote_data(m_remote_data);
     }
-    m_remote_controller_data = parse_remote_data(m_remote_data);
+    send_data();
 }
 
+RemoteControllerData Transceiver::get_remote_data() {
+    RemoteControllerData remote_data = m_remote_controller_data;
+    m_remote_controller_data.new_data = false;
+    return remote_data;
+}
+
+void Transceiver::set_data_to_send(const DataToSend& data) {
+    m_data_to_send = data;
+}
 bool Transceiver::verify_checksum(const String& data) {
     JsonDocument m_json_data;
     deserializeJson(m_json_data, data);
@@ -77,12 +86,20 @@ RemoteControllerData Transceiver::parse_remote_data(const String& data) {
 void Transceiver::send_data() {
     JsonDocument m_json_data;
     String json;
+    uint32_t bitmask = 0;
+    bitmask |= (m_data_to_send.arm_state << 0);
+    bitmask |= (m_data_to_send.steering_mode << 1);
+    bitmask |= (m_data_to_send.drive_mode << 3);
+    bitmask |= (m_data_to_send.battery_status << 5);
+
+    m_json_data["b"] = bitmask;
+    serializeJson(m_json_data, json);
+
+    uint8_t checksum = 0;
+    for (char c : json) {
+        checksum ^= c;
+    }
+    m_json_data["c"] = checksum;
     serializeJson(m_json_data, json);
     m_esp_now_handler->send_data(json);
-}
-
-RemoteControllerData Transceiver::get_remote_data() {
-    RemoteControllerData remote_data = m_remote_controller_data;
-    m_remote_controller_data.new_data = false;
-    return remote_data;
 }

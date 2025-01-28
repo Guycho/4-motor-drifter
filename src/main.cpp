@@ -101,7 +101,7 @@ void setup() {
 
 void loop() {
     mav_bridge.run();
-    transceiver.update_data();
+    transceiver.run();
     battery_handler.run();
     control.run();
     ota_handler.run();
