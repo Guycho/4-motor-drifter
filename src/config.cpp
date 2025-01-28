@@ -35,7 +35,9 @@ HardwareSerial *serial = &Serial2;
 const uint32_t baudrate = 2000000;
 const uint8_t system_id = 1;
 const uint8_t component_id = 0;
-const uint8_t message_rate = 100;
+const uint8_t message_rate_level_1 = 100;
+const uint8_t message_rate_level_2 = 4;
+const uint8_t m_arm_request_rate = 100;
 const uint16_t is_alive_timeout = 2500;
 }  // namespace MavlinkBridge
 

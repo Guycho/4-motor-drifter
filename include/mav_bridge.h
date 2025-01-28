@@ -2,16 +2,17 @@
 #define MAV_BRIDGE_H
 
 #include <Arduino.h>
-#include <all/mavlink.h>
 #include <Chrono.h>
-
+#include <all/mavlink.h>
+#include "config.h"
 #include "utils.h"
 struct MavBridgeConfig {
     HardwareSerial *serial;
     uint32_t baudrate;
     uint8_t system_id;
     uint8_t component_id;
-    uint8_t message_rate;
+    uint8_t message_rate_level_1;
+    uint8_t message_rate_level_2;
     uint16_t is_alive_timeout;
 };
 
@@ -32,7 +33,6 @@ struct MavMsg {
     uint8_t component_id;
     uint16_t msg_id;
     float params[7] = {0, 0, 0, 0, 0, 0, 0};
-
 };
 
 struct MotorSpeed {
@@ -65,23 +65,31 @@ class MavBridge {
     void set_arm_state(bool arm_state);
     MavlinkData get_mavlink_data();
 
-private:
-    void set_messages_rates();
-    void set_message_rate(uint32_t msg_id, uint16_t message_rate_hz);
-    void request_messages(uint32_t msg_id);
-    void send_mavlink_message(const MavMsg &mav_msg);
+   private:
+   void set_group_messages();
+   void handle_arm_state();
+   void handle_sessage_requests();
+   void request_message(uint32_t msg_id);
+   void send_mavlink_message(const MavMsg &mav_msg);
 
-    HardwareSerial *m_serial;
-    uint32_t m_baudrate;
-    uint8_t m_system_id;
-    uint8_t m_component_id;
-    uint8_t m_message_rate;
-    uint16_t m_is_alive_timeout;
+   HardwareSerial *m_serial;
+   uint32_t m_baudrate;
+   uint8_t m_system_id;
+   uint8_t m_component_id;
+   uint8_t m_message_rate_timeout_level_1;
+   uint8_t m_message_rate_timeout_level_2;
+   uint16_t m_is_alive_timeout;
+   uint32_t m_message_group_level_1[Config::MavlinkBridge::num_messages_per_group];
+   uint32_t m_message_group_level_2[Config::MavlinkBridge::num_messages_per_group];
 
-    Chrono m_is_alive_timer;
-    Chrono m_message_rate_timer_level_1;
-    Chrono m_message_rate_timer_level_2;
-    MavlinkData m_mavlink_data;
-    };
+   bool m_is_armed;
+   bool m_arm_requested;
+
+   Chrono m_is_alive_timer;
+   Chrono m_message_rate_timer_level_1;
+   Chrono m_message_rate_timer_level_2;
+   Chrono m_arm_request_timer;
+   MavlinkData m_mavlink_data;
+};
 
 #endif  // MAV_BRIDGE_H
