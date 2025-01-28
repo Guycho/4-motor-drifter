@@ -10,9 +10,13 @@
 #include "steering_mixer.h"
 #include "transceiver.h"
 #include "wheels_mixer.h"
+#include  "battery_handler.h"
 
 ESPNowHandler esp_now_handler(Config::ESPNow::peer_mac_address, Config::ESPNow::use_lr,
   Config::ESPNow::print_debug);
+OTAHandler ota_handler(Config::OTAHandler::hostname, Config::OTAHandler::credentials,
+  Config::OTAHandler::num_networks, Config::OTAHandler::timeout_sec,
+  Config::OTAHandler::print_debug);
 Transceiver transceiver;
 InputController input_controller;
 MavBridge mav_bridge;
@@ -20,12 +24,16 @@ SteeringMixer steering_mixer;
 WheelsMixer wheels_mixer;
 PID pid;
 Control control;
-OTAHandler ota_handler(Config::OTAHandler::hostname, Config::OTAHandler::credentials,
-  Config::OTAHandler::num_networks, Config::OTAHandler::timeout_sec,
-  Config::OTAHandler::print_debug);
+BatteryHandler battery_handler;
 
 void setup() {
     Serial.begin(9600);
+
+    esp_now_handler.init();
+
+    ota_handler.init();
+
+    TelnetStream.begin();
 
     TransceiverConfig transceiver_config = {.update_delay_ms = Config::Transceiver::update_delay_ms,
       .esp_now_handler = &esp_now_handler};
@@ -71,25 +79,30 @@ void setup() {
       .use_filters = Config::PIDController::use_filters};
     pid.init(pid_config);
 
+    BatteryHandlerConfig battery_config = {.mav_bridge = &mav_bridge,
+      .check_interval = Config::BatteryHandler::check_interval,
+      .low_voltage_threshold = Config::BatteryHandler::low_voltage_threshold,
+      .low_voltage_timeout = Config::BatteryHandler::low_voltage_timeout,
+      .critical_voltage_threshold = Config::BatteryHandler::critical_voltage_threshold,
+      .critical_voltage_timeout = Config::BatteryHandler::critical_voltage_timeout};
+    battery_handler.init(battery_config);
+
     ControlConfig control_config = {.mav_bridge = &mav_bridge,
       .steering_mixer = &steering_mixer,
       .wheels_mixer = &wheels_mixer,
       .pid = &pid,
       .input_controller = &input_controller,
+      .battery_handler = &battery_handler,
       .transceiver = &transceiver,
       .arm_led_pin = Config::arm_led_pin};
     control.init(control_config);
 
-    esp_now_handler.init();
-
-    ota_handler.init();
-
-    TelnetStream.begin();
 }
 
 void loop() {
     mav_bridge.run();
     transceiver.update_data();
+    battery_handler.run();
     control.run();
     ota_handler.run();
 }

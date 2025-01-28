@@ -41,6 +41,14 @@ const uint8_t m_arm_request_rate = 100;
 const uint16_t is_alive_timeout = 2500;
 }  // namespace MavlinkBridge
 
+namespace BatteryHandler {
+const uint32_t check_interval = 250;
+const float low_voltage_threshold = 3.5;
+const uint16_t low_voltage_timeout = 5000;
+const float critical_voltage_threshold = 3.3;
+const uint16_t critical_voltage_timeout = 2500;
+}  // namespace BatteryHandler
+
 namespace ESPNow {
 const uint8_t peer_mac_address[] = {0xA0, 0xDD, 0x6C, 0x03, 0x9E, 0x40};
 const bool use_lr = true;

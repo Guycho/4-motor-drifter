@@ -10,6 +10,7 @@ void Control::init(const ControlConfig &config) {
     m_wheels_mixer = config.wheels_mixer;
     m_pid = config.pid;
     m_input_controller = config.input_controller;
+    m_battery_handler = config.battery_handler;
     m_transceiver = config.transceiver;
     m_arm_led_pin = config.arm_led_pin;
     m_arm_enabled = false;
@@ -49,10 +50,28 @@ void Control::update_mavlink_data() { m_mavlink_data = m_mav_bridge->get_mavlink
 
 void Control::update_input_data() { m_input_data = m_input_controller->get_input_data(); }
 
+void Control::update_battery_status() {
+    m_battery_status = m_battery_handler->get_battery_status();
+}
+
+void Control::handle_battery_status() {
+    if (m_battery_status == BATTERY_CRITICAL) {
+        m_arm_enabled = false;
+        m_mav_bridge->set_arm_state(false);
+        m_throttle = 0;
+        m_steering = 0;
+        m_battery_ok = false;
+    } else if (m_battery_status == BATTERY_LOW) {
+        m_battery_ok = false;
+    } else {
+        m_battery_ok = true;
+    }
+}
 void Control::handle_new_input_data() {
     m_was_safe = !m_input_data.arm_switch ? true : m_was_safe;
-    m_ready_to_arm = m_was_safe && m_input_data.throttle == 0 && m_input_data.steering == 0;
-    if (m_input_data.arm_switch != m_arm_enabled){
+    m_ready_to_arm =
+      m_was_safe && m_input_data.throttle == 0 && m_input_data.steering == 0 && m_battery_ok;
+    if (m_input_data.arm_switch != m_arm_enabled) {
         m_arm_enabled = m_input_data.arm_switch && m_ready_to_arm;
         m_mav_bridge->set_arm_state(m_arm_enabled);
     }

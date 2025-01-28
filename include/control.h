@@ -11,6 +11,7 @@
 #include "transceiver.h"
 #include "utils.h"
 #include "wheels_mixer.h"
+#include "battery_handler.h"
 
 struct ControlConfig {
     MavBridge *mav_bridge;
@@ -18,7 +19,9 @@ struct ControlConfig {
     WheelsMixer *wheels_mixer;
     PID *pid;
     InputController *input_controller;
+    BatteryHandler *battery_handler;
     Transceiver *transceiver;
+
     uint8_t arm_led_pin;
 };
 
@@ -37,7 +40,9 @@ class Control {
    private:
     void update_mavlink_data();
     void update_input_data();
+    void update_battery_status();
     void handle_new_input_data();
+    void handle_battery_status();
     void handle_heartbeat_timeout();
     void handle_steering_mode();
     void handle_drive_mode();
@@ -49,6 +54,7 @@ class Control {
     WheelsMixer *m_wheels_mixer;
     PID *m_pid;
     InputController *m_input_controller;
+    BatteryHandler *m_battery_handler;
     Transceiver *m_transceiver;
 
     Chrono m_hb_timer;
@@ -56,6 +62,7 @@ class Control {
     InputControllerData m_input_data;
     SteeringMixerData m_steering_mixer_data;
     WheelsMixerData m_wheels_mixer_data;
+    BatteryStatus m_battery_status;
 
     uint8_t m_arm_led_pin;
 
@@ -67,6 +74,7 @@ class Control {
 
     bool m_ready_to_arm = false;
     bool m_was_safe = false;
+    bool m_battery_ok = false;
     bool m_arm_enabled = false;
     float m_throttle = 0;
     float m_steering = 0;

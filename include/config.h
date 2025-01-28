@@ -2,6 +2,7 @@
 #define CONFIG_H
 
 #include <Arduino.h>
+
 #include "credentials.h"
 enum WheelsPositions { RR = 0, FR = 1, RL = 2, FL = 3 };
 enum SteeringPositions { L = 0, R = 1 };
@@ -58,6 +59,14 @@ extern const uint8_t message_rate_level_2;
 extern const uint8_t m_arm_request_rate;
 extern const uint16_t is_alive_timeout;
 }  // namespace MavlinkBridge
+
+namespace BatteryHandler {
+extern const uint32_t check_interval;
+extern const float low_voltage_threshold;
+extern const uint16_t low_voltage_timeout;
+extern const float critical_voltage_threshold;
+extern const uint16_t critical_voltage_timeout;
+}  // namespace BatteryHandler
 
 namespace ESPNow {
 extern const uint8_t peer_mac_address[];
