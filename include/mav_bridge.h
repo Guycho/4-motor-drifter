@@ -79,7 +79,8 @@ private:
     uint16_t m_is_alive_timeout;
 
     Chrono m_is_alive_timer;
-    Chrono m_message_rate_timer;
+    Chrono m_message_rate_timer_level_1;
+    Chrono m_message_rate_timer_level_2;
     MavlinkData m_mavlink_data;
     };
 

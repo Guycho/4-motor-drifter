@@ -50,7 +50,6 @@ void MavBridge::run()
                     m_mavlink_data.inertial_data.gyro.x = Calcs::rad_to_deg(att.rollspeed);
                     m_mavlink_data.inertial_data.gyro.y = Calcs::rad_to_deg(att.pitchspeed);
                     m_mavlink_data.inertial_data.gyro.z = Calcs::rad_to_deg(att.yawspeed);
-                    // Serial.println("Attitude");
                 }
                 else if (msg.msgid == MAVLINK_MSG_ID_SCALED_IMU)
                 {
@@ -59,7 +58,6 @@ void MavBridge::run()
                     m_mavlink_data.inertial_data.acceleration.x = imu.xacc / 1e2;
                     m_mavlink_data.inertial_data.acceleration.y = imu.yacc / 1e2;
                     m_mavlink_data.inertial_data.acceleration.z = imu.zacc / 1e2;
-                    // Serial.println("Scaled IMU");
                 }
                 else if (msg.msgid == MAVLINK_MSG_ID_ESC_TELEMETRY_1_TO_4)
                 {
