@@ -50,6 +50,7 @@ struct FourMotorSpeed {
 struct MavlinkData {
     InertialData inertial_data;
     FourMotorSpeed four_motor_speed;
+    Vector3D vibration;
     float battery_voltage;
     bool is_alive = false;
 };

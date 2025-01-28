@@ -56,6 +56,12 @@ void MavBridge::run() {
                 m_mavlink_data.four_motor_speed.motor2_rpm = esc.rpm[1];
                 m_mavlink_data.four_motor_speed.motor3_rpm = esc.rpm[2];
                 m_mavlink_data.four_motor_speed.motor4_rpm = esc.rpm[3];
+            } else if (msg.msgid == MAVLINK_MSG_ID_VIBRATION) {
+                mavlink_vibration_t vib;
+                mavlink_msg_vibration_decode(&msg, &vib);
+                m_mavlink_data.vibration.x = vib.vibration_x;
+                m_mavlink_data.vibration.y = vib.vibration_y;
+                m_mavlink_data.vibration.z = vib.vibration_z;
             } else if (msg.msgid == MAVLINK_MSG_ID_BATTERY_STATUS) {
                 mavlink_battery_status_t battery;
                 mavlink_msg_battery_status_decode(&msg, &battery);
@@ -91,6 +97,7 @@ void MavBridge::set_group_messages() {
     m_message_group_level_1[0] = MAVLINK_MSG_ID_ATTITUDE;
     m_message_group_level_1[1] = MAVLINK_MSG_ID_SCALED_IMU;
     m_message_group_level_1[2] = MAVLINK_MSG_ID_ESC_TELEMETRY_1_TO_4;
+    m_message_group_level_1[3] = MAVLINK_MSG_ID_VIBRATION;
 
     m_message_group_level_2[0] = MAVLINK_MSG_ID_HEARTBEAT;
     m_message_group_level_2[1] = MAVLINK_MSG_ID_BATTERY_STATUS;
@@ -106,9 +113,7 @@ void MavBridge::set_motor_speed(MotorSpeed motor_speed) {
     send_mavlink_message(m_mav_msg);
 }
 
-void MavBridge::set_arm_state(bool arm_state) {
-    m_arm_requested = arm_state;
-}
+void MavBridge::set_arm_state(bool arm_state) { m_arm_requested = arm_state; }
 
 void MavBridge::handle_arm_state() {
     if (m_arm_request_timer.hasPassed(Config::MavlinkBridge::m_arm_request_rate, true) &&
