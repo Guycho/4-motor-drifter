@@ -68,6 +68,7 @@ class MavBridge {
 private:
     void set_messages_rates();
     void set_message_rate(uint32_t msg_id, uint16_t message_rate_hz);
+    void request_messages(uint32_t msg_id);
     void send_mavlink_message(const MavMsg &mav_msg);
 
     HardwareSerial *m_serial;
@@ -78,6 +79,7 @@ private:
     uint16_t m_is_alive_timeout;
 
     Chrono m_is_alive_timer;
+    Chrono m_message_rate_timer;
     MavlinkData m_mavlink_data;
     };
 

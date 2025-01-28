@@ -78,7 +78,7 @@ void setup() {
 
     esp_now_handler.init();
 
-    ota_handler.init();
+    // ota_handler.init();
 
     TelnetStream.begin();
 }

@@ -52,7 +52,7 @@ extern HardwareSerial *serial;
 extern const uint32_t baudrate;
 extern const uint8_t system_id;
 extern const uint8_t component_id;
-extern const uint16_t message_rate;
+extern const uint8_t message_rate;
 extern const uint16_t is_alive_timeout;
 }  // namespace MavlinkBridge
 
