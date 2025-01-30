@@ -13,6 +13,7 @@ struct MavBridgeConfig {
     uint8_t component_id;
     uint8_t message_rate_level_1;
     uint8_t message_rate_level_2;
+    uint8_t arm_request_timeout;
     uint16_t is_alive_timeout;
 };
 
@@ -69,7 +70,9 @@ class MavBridge {
    private:
    void set_group_messages();
    void handle_arm_state();
-   void handle_sessage_requests();
+   void handle_message_requests();
+   void set_message_rate(uint32_t msg_id, uint8_t rate);
+   void set_messages_rate();
    void request_message(uint32_t msg_id);
    void send_mavlink_message(const MavMsg &mav_msg);
 
@@ -79,6 +82,8 @@ class MavBridge {
    uint8_t m_component_id;
    uint8_t m_message_rate_timeout_level_1;
    uint8_t m_message_rate_timeout_level_2;
+   uint8_t m_arm_request_timeout;
+
    uint16_t m_is_alive_timeout;
    uint32_t m_message_group_level_1[Config::MavlinkBridge::num_messages_per_group];
    uint32_t m_message_group_level_2[Config::MavlinkBridge::num_messages_per_group];

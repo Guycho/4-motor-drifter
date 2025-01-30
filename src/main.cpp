@@ -48,6 +48,7 @@ void setup() {
       .component_id = Config::MavlinkBridge::component_id,
       .message_rate_level_1 = Config::MavlinkBridge::message_rate_level_1,
       .message_rate_level_2 = Config::MavlinkBridge::message_rate_level_2,
+      .arm_request_timeout = Config::MavlinkBridge::arm_request_rate,
       .is_alive_timeout = Config::MavlinkBridge::is_alive_timeout};
     mav_bridge.init(mav_config);
 

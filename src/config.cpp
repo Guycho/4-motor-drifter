@@ -14,8 +14,8 @@ const uint16_t max_pulse[num_wheels] = {2000, 2000, 2000, 2000};
 }  // namespace Wheel
 namespace Steering {
 const uint8_t pin[num_steering] = {7, 8};
-const uint16_t min_pulse[num_steering] = {1000, 1000};
-const uint16_t max_pulse[num_steering] = {2000, 2000};
+const uint16_t min_pulse[num_steering] = {1350, 1350};
+const uint16_t max_pulse[num_steering] = {1650, 1650};
 }  // namespace Steering
 }  // namespace Motor
 
@@ -32,12 +32,12 @@ const bool use_filters = true;
 
 namespace MavlinkBridge {
 HardwareSerial *serial = &Serial2;
-const uint32_t baudrate = 2000000;
+const uint32_t baudrate = 921600;
 const uint8_t system_id = 1;
-const uint8_t component_id = 0;
+const uint8_t component_id = 1;
 const uint8_t message_rate_level_1 = 100;
 const uint8_t message_rate_level_2 = 4;
-const uint8_t m_arm_request_rate = 100;
+const uint8_t arm_request_rate = 4;
 const uint16_t is_alive_timeout = 2500;
 }  // namespace MavlinkBridge
 
@@ -59,5 +59,4 @@ const char *credentials[num_networks][2] = {{WIFI_SSID1, WIFI_PASSWORD2},
   {WIFI_SSID2, WIFI_PASSWORD2}, {WIFI_SSID3, WIFI_PASSWORD3}};
 const char *hostname = "CarOTA";
 }  // namespace OTAHandler
-
 }  // namespace Config
