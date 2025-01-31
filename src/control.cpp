@@ -52,11 +52,20 @@ void Control::run()
     apply_multiplier(m_steering_mixer_data);
     m_steering_mixer->run(m_steering_mixer_data);
     m_wheels_mixer->run(m_wheels_mixer_data);
+    handle_data_to_send();
 }
 
 void Control::update_mavlink_data() { m_mavlink_data = m_mav_bridge->get_mavlink_data(); }
 
 void Control::update_input_data() { m_input_data = m_input_controller->get_input_data(); }
+
+void Control::handle_data_to_send(){
+    m_data_to_send.arm_state = m_arm_enabled;
+    m_data_to_send.steering_mode = m_steering_mode;
+    m_data_to_send.drive_mode = m_drive_mode;
+    m_data_to_send.battery_status = m_battery_status;
+    m_transceiver->set_data_to_send(m_data_to_send);
+}
 
 void Control::update_battery_status()
 {

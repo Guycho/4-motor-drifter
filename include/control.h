@@ -13,7 +13,8 @@
 #include "wheels_mixer.h"
 #include "battery_handler.h"
 
-struct ControlConfig {
+struct ControlConfig
+{
     MavBridge *mav_bridge;
     SteeringMixer *steering_mixer;
     WheelsMixer *wheels_mixer;
@@ -25,8 +26,9 @@ struct ControlConfig {
     uint8_t arm_led_pin;
 };
 
-class Control {
-   public:
+class Control
+{
+public:
     // Constructor
     Control();
 
@@ -37,7 +39,7 @@ class Control {
     void run();
     void apply_multiplier(SteeringMixerData &steering_mixer_data);
 
-   private:
+private:
     void update_mavlink_data();
     void update_input_data();
     void update_battery_status();
@@ -47,6 +49,7 @@ class Control {
     void handle_steering_mode();
     void handle_drive_mode();
     void handle_locks();
+    void handle_data_to_send();
     void disable_motors();
 
     MavBridge *m_mav_bridge;
@@ -63,6 +66,7 @@ class Control {
     SteeringMixerData m_steering_mixer_data;
     WheelsMixerData m_wheels_mixer_data;
     BatteryStatus m_battery_status;
+    DataToSend m_data_to_send;
 
     uint8_t m_arm_led_pin;
 
@@ -82,4 +86,4 @@ class Control {
     bool m_lock_rear_left = false;
 };
 
-#endif  // CONTROL_H
+#endif // CONTROL_H
