@@ -85,44 +85,20 @@ RemoteControllerData Transceiver::parse_remote_data(const String &data) {
 void Transceiver::send_data() {
     JsonDocument m_json_data;
     String json;
-    uint64_t bitmask = 0;
-    uint8_t scaled_battery_voltage = static_cast<uint8_t>((m_telemetry_data.battery_voltage) * 10);
-    uint16_t scaled_motor_throttle[Config::num_wheels];
-    for (int i = 0; i < Config::num_wheels; i++) {
-        scaled_motor_throttle[i] =
-          static_cast<uint16_t>((m_telemetry_data.motors_throttle[i] + 100) * 2.555);
+
+    const uint8_t bitmask_size = sizeof(m_telemetry_data);
+    m_json_data["s"] = bitmask_size;
+
+    std::bitset<bitmask_size> bitmask;
+
+    uint8_t *data_ptr = reinterpret_cast<uint8_t *>(&m_telemetry_data);
+    for (size_t i = 0; i < sizeof(TelemetryData); ++i) {
+        std::bitset<8> byte(data_ptr[i]);
+        bitmask |= (std::bitset<bitmask_size>(byte.to_ulong()) << (i * 8));
     }
-    uint16_t scaled_steering_values[Config::num_steering];
-    for (int i = 0; i < Config::num_steering; i++) {
-        scaled_steering_values[i] =
-          static_cast<uint16_t>((m_telemetry_data.steering_valus[i] + 100) * 2.555);
-    }
-    uint16_t scaled_g_force_x = static_cast<uint16_t>((m_telemetry_data.g_force_x + 5) * 102.3);
-    uint16_t scaled_g_force_y = static_cast<uint16_t>((m_telemetry_data.g_force_y + 5) * 102.3);
-    uint16_t scaled_rotation_rate_z =
-      static_cast<uint16_t>((m_telemetry_data.rotation_rate_z + 360) * 2.843);
 
-    bitmask |= (scaled_battery_voltage << 0);
-    bitmask |= (m_telemetry_data.arm_state << 8);
+    m_json_data["b"] = bitmask.to_ullong();
 
-    bitmask |= (m_telemetry_data.steering_mode << 9);
-    bitmask |= (m_telemetry_data.drive_mode << 11);
-    bitmask |= (m_telemetry_data.battery_status << 13);
-    bitmask |= (scaled_motor_throttle[0] << 15);
-    bitmask |= (scaled_motor_throttle[1] << 24);
-    bitmask |= (scaled_motor_throttle[2] << 33);
-    bitmask |= (scaled_motor_throttle[3] << 42);
-    bitmask |= (m_telemetry_data.motors_rpm[0] << 55);
-    bitmask |= (m_telemetry_data.motors_rpm[1] << 68);
-    bitmask |= (m_telemetry_data.motors_rpm[2] << 81);
-    bitmask |= (m_telemetry_data.motors_rpm[3] << 94);
-    bitmask |= (scaled_steering_values[0] << 107);
-    bitmask |= (scaled_steering_values[1] << 116);
-    bitmask |= (scaled_g_force_x << 125);
-    bitmask |= (scaled_g_force_y << 134);
-    bitmask |= (scaled_rotation_rate_z << 143);
-
-    m_json_data["b"] = bitmask;
     serializeJson(m_json_data, json);
 
     uint8_t checksum = 0;

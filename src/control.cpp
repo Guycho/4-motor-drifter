@@ -63,7 +63,7 @@ void Control::handle_telemetry_data() {
         m_telemetry_data.motors_rpm[i] = m_mavlink_data.four_motor_speed.motor_rpm[i];
     }
     for (int i = 0; i < Config::num_steering; i++) {
-        m_telemetry_data.steering_valus[i] = m_steering_mixer_data.motor_speed[i];
+        m_telemetry_data.steering_values[i] = m_steering_mixer_data.motor_speed[i];
     }
     m_telemetry_data.g_force_x = m_mavlink_data.inertial_data.acceleration.x;
     m_telemetry_data.g_force_y = m_mavlink_data.inertial_data.acceleration.y;

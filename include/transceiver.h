@@ -5,6 +5,8 @@
 #include <Chrono.h>
 #include <WiFi.h>
 
+#include <bitset>
+
 #include "ESP_now_handler.h"
 #include "config.h"
 
@@ -29,17 +31,17 @@ struct RemoteControllerData {
 };
 
 struct TelemetryData {
-    float battery_voltage;
     bool arm_state;
     uint8_t steering_mode;
     uint8_t drive_mode;
     uint8_t battery_status;
-    float motors_throttle[Config::num_wheels];
     uint16_t motors_rpm[Config::num_wheels];
-    float steering_valus[Config::num_steering];
+    float battery_voltage;
     float g_force_x;
     float g_force_y;
     float rotation_rate_z;
+    float motors_throttle[Config::num_wheels];
+    float steering_values[Config::num_steering];
 };
 
 struct TransceiverConfig {
