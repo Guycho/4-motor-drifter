@@ -66,6 +66,8 @@ extern const float low_voltage_threshold;
 extern const uint16_t low_voltage_timeout;
 extern const float critical_voltage_threshold;
 extern const uint16_t critical_voltage_timeout;
+extern const float usb_power_threshold;
+extern const uint16_t usb_power_timeout;
 }  // namespace BatteryHandler
 
 namespace ESPNow {

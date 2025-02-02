@@ -85,7 +85,10 @@ void setup() {
       .low_voltage_threshold = Config::BatteryHandler::low_voltage_threshold,
       .low_voltage_timeout = Config::BatteryHandler::low_voltage_timeout,
       .critical_voltage_threshold = Config::BatteryHandler::critical_voltage_threshold,
-      .critical_voltage_timeout = Config::BatteryHandler::critical_voltage_timeout};
+      .critical_voltage_timeout = Config::BatteryHandler::critical_voltage_timeout,
+      .usb_power_threshold = Config::BatteryHandler::usb_power_threshold,
+      .usb_power_timeout = Config::BatteryHandler::usb_power_timeout};
+
     battery_handler.init(battery_config);
 
     ControlConfig control_config = {.mav_bridge = &mav_bridge,

@@ -69,10 +69,10 @@ void MavBridge::run()
             {
                 mavlink_esc_telemetry_1_to_4_t esc;
                 mavlink_msg_esc_telemetry_1_to_4_decode(&msg, &esc);
-                m_mavlink_data.four_motor_speed.motor1_rpm = esc.rpm[0];
-                m_mavlink_data.four_motor_speed.motor2_rpm = esc.rpm[1];
-                m_mavlink_data.four_motor_speed.motor3_rpm = esc.rpm[2];
-                m_mavlink_data.four_motor_speed.motor4_rpm = esc.rpm[3];
+                for (uint8_t i = 0; i < Config::num_wheels; i++)
+                {
+                    m_mavlink_data.four_motor_speed.motor_rpm[i] = esc.rpm[i];
+                }
             }
             else if (msg.msgid == MAVLINK_MSG_ID_VIBRATION)
             {

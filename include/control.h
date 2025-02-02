@@ -49,7 +49,7 @@ private:
     void handle_steering_mode();
     void handle_drive_mode();
     void handle_locks();
-    void handle_data_to_send();
+    void handle_telemetry_data();
     void disable_motors();
 
     MavBridge *m_mav_bridge;
@@ -66,7 +66,7 @@ private:
     SteeringMixerData m_steering_mixer_data;
     WheelsMixerData m_wheels_mixer_data;
     BatteryStatus m_battery_status;
-    DataToSend m_data_to_send;
+    TelemetryData m_telemetry_data;
 
     uint8_t m_arm_led_pin;
 

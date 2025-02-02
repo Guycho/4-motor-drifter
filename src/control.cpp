@@ -52,19 +52,33 @@ void Control::run()
     apply_multiplier(m_steering_mixer_data);
     m_steering_mixer->run(m_steering_mixer_data);
     m_wheels_mixer->run(m_wheels_mixer_data);
-    handle_data_to_send();
+    handle_telemetry_data();
 }
 
 void Control::update_mavlink_data() { m_mavlink_data = m_mav_bridge->get_mavlink_data(); }
 
 void Control::update_input_data() { m_input_data = m_input_controller->get_input_data(); }
 
-void Control::handle_data_to_send(){
-    m_data_to_send.arm_state = m_arm_enabled;
-    m_data_to_send.steering_mode = m_steering_mode;
-    m_data_to_send.drive_mode = m_drive_mode;
-    m_data_to_send.battery_status = m_battery_status;
-    m_transceiver->set_data_to_send(m_data_to_send);
+void Control::handle_telemetry_data()
+{
+    m_telemetry_data.battery_voltage = m_battery_handler->get_voltage();
+    m_telemetry_data.arm_state = m_arm_enabled;
+    m_telemetry_data.steering_mode = m_steering_mode;
+    m_telemetry_data.drive_mode = m_drive_mode;
+    m_telemetry_data.battery_status = m_battery_status;
+    for (int i = 0; i < Config::num_wheels; i++)
+    {
+        m_telemetry_data.motors_throttle[i] = m_wheels_mixer_data.motor_speed[i];
+        m_telemetry_data.motors_rpm[i] = m_mavlink_data.four_motor_speed.motor_rpm[i];
+    }
+    for (int i = 0; i < Config::num_steering; i++)
+    {
+        m_telemetry_data.steering_valus[i] = m_steering_mixer_data.motor_speed[i];
+    }
+    m_telemetry_data.g_force_x = m_mavlink_data.inertial_data.acceleration.x;
+    m_telemetry_data.g_force_y = m_mavlink_data.inertial_data.acceleration.y;
+    m_telemetry_data.rotation_rate_z = m_mavlink_data.inertial_data.gyro.z;
+    m_transceiver->set_telemetry_data(m_telemetry_data);
 }
 
 void Control::update_battery_status()

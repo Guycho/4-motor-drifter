@@ -8,7 +8,8 @@
 #include "ESP_now_handler.h"
 #include "config.h"
 
-struct RemoteControllerData {
+struct RemoteControllerData
+{
     float throttle = 0;
     float steering = 0;
     bool left_arrow = 0;
@@ -28,29 +29,39 @@ struct RemoteControllerData {
     bool new_data = 0;
 };
 
-struct DataToSend {
+struct TelemetryData
+{
+    float battery_voltage;
     bool arm_state;
     uint8_t steering_mode;
     uint8_t drive_mode;
     uint8_t battery_status;
+    float motors_throttle[Config::num_wheels];
+    uint16_t motors_rpm[Config::num_wheels];
+    float steering_valus[Config::num_steering];
+    float g_force_x;
+    float g_force_y;
+    float rotation_rate_z;
 };
 
-struct TransceiverConfig {
+struct TransceiverConfig
+{
     uint16_t update_delay_ms;
     ESPNowHandler *esp_now_handler;
 };
 
-class Transceiver {
-   public:
+class Transceiver
+{
+public:
     Transceiver();
     ~Transceiver();
 
     void init(const TransceiverConfig &config);
     void run();
     RemoteControllerData get_remote_data();
-    void set_data_to_send(const DataToSend &data);
+    void set_telemetry_data(const TelemetryData &data);
 
-   private:
+private:
     void send_data();
     bool verify_checksum(const String &data);
     RemoteControllerData parse_remote_data(const String &data);
@@ -58,9 +69,9 @@ class Transceiver {
     ESPNowHandler *m_esp_now_handler;
 
     RemoteControllerData m_remote_controller_data;
-    DataToSend m_data_to_send;
+    TelemetryData m_telemetry_data;
     String m_remote_data;
     uint16_t m_update_delay_ms;
 };
 
-#endif  // ESP32SERVER_HPP
+#endif // ESP32SERVER_HPP

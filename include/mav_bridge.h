@@ -42,10 +42,7 @@ struct MotorSpeed {
 };
 
 struct FourMotorSpeed {
-    uint16_t motor1_rpm;
-    uint16_t motor2_rpm;
-    uint16_t motor3_rpm;
-    uint16_t motor4_rpm;
+    uint16_t motor_rpm[Config::num_wheels];
 };
 
 struct MavlinkData {
