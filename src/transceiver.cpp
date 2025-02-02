@@ -34,14 +34,12 @@ bool Transceiver::verify_checksum(const String &data) {
     deserializeJson(m_json_data, data);
     // Extract the checksum from the JSON document
     uint8_t received_checksum = m_json_data["c"];
-
-    // Calculate the checksum (XOR of all bytes except the checksum itself)
-    uint8_t calculated_checksum = 0;
-    for (size_t i = 0; i < data.length(); ++i) {
-        if (data[i] == ',') break;  // Stop before the checksum field
-        calculated_checksum ^= data[i];
-    }
-    calculated_checksum ^= '}';
+    // Remove the checksum from the JSON document
+    m_json_data.remove("c");
+    String json;
+    serializeJson(m_json_data, json);
+    
+    uint8_t calculated_checksum = Calcs::calc_checksum(json);
     if (received_checksum != calculated_checksum) {
         return false;  // Checksum mismatch;
     }
@@ -101,11 +99,7 @@ void Transceiver::send_data() {
 
     serializeJson(m_json_data, json);
 
-    uint8_t checksum = 0;
-    for (char c : json) {
-        checksum ^= c;
-    }
-    m_json_data["c"] = checksum;
+    m_json_data["c"] = Calcs::calc_checksum(json);
     serializeJson(m_json_data, json);
     m_esp_now_handler->send_data(json);
 }
