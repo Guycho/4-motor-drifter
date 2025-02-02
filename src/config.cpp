@@ -14,8 +14,8 @@ const uint16_t max_pulse[num_wheels] = {2000, 2000, 2000, 2000};
 }  // namespace Wheel
 namespace Steering {
 const uint8_t pin[num_steering] = {7, 8};
-const uint16_t min_pulse[num_steering] = {1350, 1350};
-const uint16_t max_pulse[num_steering] = {1650, 1650};
+const uint16_t min_pulse[num_steering] = {1100, 1100};
+const uint16_t max_pulse[num_steering] = {1900, 1900};
 }  // namespace Steering
 }  // namespace Motor
 
