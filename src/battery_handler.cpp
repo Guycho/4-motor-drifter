@@ -3,8 +3,7 @@
 BatteryHandler::BatteryHandler() {}
 BatteryHandler::~BatteryHandler() {}
 
-void BatteryHandler::init(const BatteryHandlerConfig &config)
-{
+void BatteryHandler::init(const BatteryHandlerConfig &config) {
     m_mav_bridge = config.mav_bridge;
     uint8_t num_cells = auto_detect_num_cells();
     m_check_interval = config.check_interval;
@@ -17,21 +16,15 @@ void BatteryHandler::init(const BatteryHandlerConfig &config)
     m_critical_voltage_timer.start();
 }
 
-void BatteryHandler::run()
-{
-    if (m_check_timer.hasPassed(m_check_interval, true))
-    {
+void BatteryHandler::run() {
+    if (m_check_timer.hasPassed(m_check_interval, true)) {
         check_voltage();
         update_battery_status();
     }
 }
 
-float BatteryHandler::get_voltage()
-{
-    return m_voltage;
-}
-void BatteryHandler::check_voltage()
-{
+float BatteryHandler::get_voltage() { return m_voltage; }
+void BatteryHandler::check_voltage() {
     m_voltage = m_mav_bridge->get_mavlink_data().battery_voltage;
     if (m_voltage < m_usb_power_threshold)
     {
@@ -47,14 +40,10 @@ void BatteryHandler::check_voltage()
     }
 }
 
-void BatteryHandler::update_battery_status()
-{
-    if (m_critical_voltage_timer.hasPassed(m_critical_voltage_timeout))
-    {
+void BatteryHandler::update_battery_status() {
+    if (m_critical_voltage_timer.hasPassed(m_critical_voltage_timeout)) {
         m_battery_status = BATTERY_CRITICAL;
-    }
-    else if (m_low_voltage_timer.hasPassed(m_low_voltage_timeout))
-    {
+    } else if (m_low_voltage_timer.hasPassed(m_low_voltage_timeout)) {
         m_battery_status = BATTERY_LOW;
     }
     else if (m_usb_power_timer.hasPassed(m_usb_power_timeout))
@@ -67,17 +56,12 @@ void BatteryHandler::update_battery_status()
     }
 }
 
-uint8_t BatteryHandler::auto_detect_num_cells()
-{
+uint8_t BatteryHandler::auto_detect_num_cells() {
     float tmp_voltage = m_mav_bridge->get_mavlink_data().battery_voltage;
-    if (tmp_voltage == 0)
-    {
+    if (tmp_voltage == 0) {
         delay(1000);
         tmp_voltage = m_mav_bridge->get_mavlink_data().battery_voltage;
     }
     return tmp_voltage > 4 * 4.3 ? 6 : 4;
 }
-BatteryStatus BatteryHandler::get_battery_status()
-{
-    return m_battery_status;
-}
+BatteryStatus BatteryHandler::get_battery_status() { return m_battery_status; }
