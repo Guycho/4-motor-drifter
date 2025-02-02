@@ -11,7 +11,8 @@ NVM::~NVM() {
 void NVM::init() {
     EEPROM.begin(sizeof(NVMData));
     read();
-    if (m_data.steering_mixer_data.motor_speed[R] != m_data.steering_mixer_data.motor_speed[R] || m_data.steering_mixer_data.motor_speed[L] != m_data.steering_mixer_data.motor_speed[L]) {
+    if (m_data.steering_mixer_data.motor_speed[R] != m_data.steering_mixer_data.motor_speed[R] ||
+        m_data.steering_mixer_data.motor_speed[L] != m_data.steering_mixer_data.motor_speed[L]) {
         m_data.steering_mixer_data.motor_speed[R] = 0;
         m_data.steering_mixer_data.motor_speed[L] = 0;
         write();

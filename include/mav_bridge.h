@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <Chrono.h>
 #include <all/mavlink.h>
+
 #include "config.h"
 #include "utils.h"
 struct MavBridgeConfig {
@@ -65,34 +66,34 @@ class MavBridge {
     MavlinkData get_mavlink_data();
 
    private:
-   void set_group_messages();
-   void handle_arm_state();
-   void handle_message_requests();
-   void set_message_rate(uint32_t msg_id, uint8_t rate);
-   void set_messages_rate();
-   void request_message(uint32_t msg_id);
-   void send_mavlink_message(const MavMsg &mav_msg);
+    void set_group_messages();
+    void handle_arm_state();
+    void handle_message_requests();
+    void set_message_rate(uint32_t msg_id, uint8_t rate);
+    void set_messages_rate();
+    void request_message(uint32_t msg_id);
+    void send_mavlink_message(const MavMsg &mav_msg);
 
-   HardwareSerial *m_serial;
-   uint32_t m_baudrate;
-   uint8_t m_system_id;
-   uint8_t m_component_id;
-   uint8_t m_message_rate_timeout_level_1;
-   uint8_t m_message_rate_timeout_level_2;
-   uint8_t m_arm_request_timeout;
+    HardwareSerial *m_serial;
+    uint32_t m_baudrate;
+    uint8_t m_system_id;
+    uint8_t m_component_id;
+    uint8_t m_message_rate_timeout_level_1;
+    uint8_t m_message_rate_timeout_level_2;
+    uint8_t m_arm_request_timeout;
 
-   uint16_t m_is_alive_timeout;
-   uint32_t m_message_group_level_1[Config::MavlinkBridge::num_messages_per_group];
-   uint32_t m_message_group_level_2[Config::MavlinkBridge::num_messages_per_group];
+    uint16_t m_is_alive_timeout;
+    uint32_t m_message_group_level_1[Config::MavlinkBridge::num_messages_per_group];
+    uint32_t m_message_group_level_2[Config::MavlinkBridge::num_messages_per_group];
 
-   bool m_is_armed;
-   bool m_arm_requested;
+    bool m_is_armed;
+    bool m_arm_requested;
 
-   Chrono m_is_alive_timer;
-   Chrono m_message_rate_timer_level_1;
-   Chrono m_message_rate_timer_level_2;
-   Chrono m_arm_request_timer;
-   MavlinkData m_mavlink_data;
+    Chrono m_is_alive_timer;
+    Chrono m_message_rate_timer_level_1;
+    Chrono m_message_rate_timer_level_2;
+    Chrono m_arm_request_timer;
+    MavlinkData m_mavlink_data;
 };
 
 #endif  // MAV_BRIDGE_H

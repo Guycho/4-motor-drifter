@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
+
 #include "transceiver.h"
 
 struct InputControllerData {
@@ -27,7 +28,7 @@ struct InputControllerData {
 };
 
 struct InputControllerConfig {
-Transceiver *transceiver;
+    Transceiver *transceiver;
 };
 
 class InputController {

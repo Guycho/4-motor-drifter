@@ -4,6 +4,7 @@
 #include <Chrono.h>
 
 #include "PID.h"
+#include "battery_handler.h"
 #include "config.h"
 #include "input_controller.h"
 #include "mav_bridge.h"
@@ -11,10 +12,8 @@
 #include "transceiver.h"
 #include "utils.h"
 #include "wheels_mixer.h"
-#include "battery_handler.h"
 
-struct ControlConfig
-{
+struct ControlConfig {
     MavBridge *mav_bridge;
     SteeringMixer *steering_mixer;
     WheelsMixer *wheels_mixer;
@@ -26,9 +25,8 @@ struct ControlConfig
     uint8_t arm_led_pin;
 };
 
-class Control
-{
-public:
+class Control {
+   public:
     // Constructor
     Control();
 
@@ -39,7 +37,7 @@ public:
     void run();
     void apply_multiplier(SteeringMixerData &steering_mixer_data);
 
-private:
+   private:
     void update_mavlink_data();
     void update_input_data();
     void update_battery_status();
@@ -86,4 +84,4 @@ private:
     bool m_lock_rear_left = false;
 };
 
-#endif // CONTROL_H
+#endif  // CONTROL_H

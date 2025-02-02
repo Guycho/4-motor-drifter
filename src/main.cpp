@@ -3,6 +3,7 @@
 #include <TelnetStream.h>
 
 #include "PID.h"
+#include "battery_handler.h"
 #include "config.h"
 #include "control.h"
 #include "input_controller.h"
@@ -10,7 +11,6 @@
 #include "steering_mixer.h"
 #include "transceiver.h"
 #include "wheels_mixer.h"
-#include  "battery_handler.h"
 
 ESPNowHandler esp_now_handler(Config::ESPNow::peer_mac_address, Config::ESPNow::use_lr,
   Config::ESPNow::print_debug);
@@ -100,7 +100,6 @@ void setup() {
       .transceiver = &transceiver,
       .arm_led_pin = Config::arm_led_pin};
     control.init(control_config);
-
 }
 
 void loop() {
