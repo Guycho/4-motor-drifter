@@ -4,7 +4,13 @@
 #include <Arduino.h>
 
 #include "credentials.h"
-enum WheelsPositions { RR = 0, FR = 1, RL = 2, FL = 3 };
+enum WheelsPositions
+{
+    FL = 0,
+    FR = 1,
+    RL = 2,
+    RR = 3
+};
 enum SteeringPositions { L = 0, R = 1 };
 
 namespace Config {

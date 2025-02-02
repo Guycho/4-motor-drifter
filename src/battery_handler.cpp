@@ -26,7 +26,7 @@ void BatteryHandler::run() {
 float BatteryHandler::get_voltage() { return m_voltage; }
 void BatteryHandler::check_voltage() {
     m_voltage = m_mav_bridge->get_mavlink_data().battery_voltage;
-    if (m_voltage < m_usb_power_threshold)
+    if (m_voltage > m_usb_power_threshold)
     {
         m_usb_power_timer.restart();
     }
@@ -41,14 +41,17 @@ void BatteryHandler::check_voltage() {
 }
 
 void BatteryHandler::update_battery_status() {
-    if (m_critical_voltage_timer.hasPassed(m_critical_voltage_timeout)) {
-        m_battery_status = BATTERY_CRITICAL;
-    } else if (m_low_voltage_timer.hasPassed(m_low_voltage_timeout)) {
-        m_battery_status = BATTERY_LOW;
-    }
-    else if (m_usb_power_timer.hasPassed(m_usb_power_timeout))
+    if (m_usb_power_timer.hasPassed(m_usb_power_timeout))
     {
         m_battery_status = USB_POWER;
+    }
+    else if (m_critical_voltage_timer.hasPassed(m_critical_voltage_timeout))
+    {
+        m_battery_status = BATTERY_CRITICAL;
+    }
+    else if (m_low_voltage_timer.hasPassed(m_low_voltage_timeout))
+    {
+        m_battery_status = BATTERY_LOW;
     }
     else
     {
