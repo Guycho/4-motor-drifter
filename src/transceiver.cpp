@@ -43,7 +43,7 @@ RemoteControllerData Transceiver::parse_remote_data(const String &data) {
             bitmask[i * 32 + j] = (bitmasks[i] & (1UL << j));
         }
     }
-    memcpy(&remote_data, &bitmask, sizeof(remote_data));
+    memcpy(&remote_data, &bitmask, sizeof(typeof(remote_data)));
     remote_data.new_data = true;
     return remote_data;
 }
