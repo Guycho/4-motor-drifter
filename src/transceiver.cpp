@@ -86,13 +86,13 @@ void Transceiver::send_data() {
     JsonDocument m_json_data;
     String json;
 
-    const uint8_t bitmask_size = sizeof(m_telemetry_data);
+    const uint8_t bitmask_size = sizeof(typeof(m_telemetry_data));
     m_json_data["s"] = bitmask_size;
 
     std::bitset<bitmask_size> bitmask;
 
     uint8_t *data_ptr = reinterpret_cast<uint8_t *>(&m_telemetry_data);
-    for (size_t i = 0; i < sizeof(TelemetryData); ++i) {
+    for (size_t i = 0; i < sizeof(typeof(m_telemetry_data)); ++i) {
         std::bitset<8> byte(data_ptr[i]);
         bitmask |= (std::bitset<bitmask_size>(byte.to_ulong()) << (i * 8));
     }
