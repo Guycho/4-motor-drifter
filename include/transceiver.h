@@ -3,13 +3,14 @@
 
 #include <ArduinoJson.h>
 #include <Chrono.h>
+#include <ESP_now_handler.h>
 #include <WiFi.h>
+#include <data_types.h>
+#include <utils.h>
+
 #include <bitset>
 
-#include <ESP_now_handler.h>
-#include <data_types.h>
 #include "config.h"
-
 
 struct TransceiverConfig {
     uint16_t update_delay_ms;
@@ -30,7 +31,6 @@ class Transceiver {
 
    private:
     void send_data();
-    bool verify_checksum(const String &data);
     RemoteControllerData parse_remote_data(const String &data);
     Chrono m_data_timer;
     ESPNowHandler *m_esp_now_handler;
