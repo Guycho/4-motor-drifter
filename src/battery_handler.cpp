@@ -11,6 +11,8 @@ void BatteryHandler::init(const BatteryHandlerConfig &config) {
     m_low_voltage_timeout = config.low_voltage_timeout;
     m_critical_voltage_threshold = config.critical_voltage_threshold * num_cells;
     m_critical_voltage_timeout = config.critical_voltage_timeout;
+    m_usb_power_threshold = config.usb_power_threshold;
+    m_usb_power_timeout = config.usb_power_timeout;
     m_check_timer.start();
     m_low_voltage_timer.start();
     m_critical_voltage_timer.start();
